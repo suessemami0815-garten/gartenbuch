@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mein Gartenbuch</title>
 
 <!-- PWA -->
@@ -205,7 +205,10 @@ img{display:block}
 .cal-day:active{background:var(--green-light)}
 .cal-day.today{background:var(--green);color:#fff;font-weight:700}
 .cal-day.has-task::after{content:'';position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--sage)}
+.cal-day.has-notiz::after{content:'';position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--gold)}
+.cal-day.has-task.has-notiz::after{background:linear-gradient(90deg,var(--sage) 50%,var(--gold) 50%);width:8px}
 .cal-day.today.has-task::after{background:#fff}
+.cal-day.today.has-notiz::after{background:#fff}
 .cal-day.other-month{opacity:0.3}
 .cal-day.selected{background:var(--green-light);border:1.5px solid var(--green)}
 
@@ -332,7 +335,8 @@ img{display:block}
 .dash-welcome::after{content:'🌿';position:absolute;right:16px;bottom:-4px;font-size:4rem;opacity:0.22}
 .dash-right{display:flex;flex-direction:column;gap:12px}
 .dash-stats-mini{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.stat-mini{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 10px;display:flex;align-items:center;gap:8px;box-shadow:0 1px 4px var(--shadow)}
+.stat-mini{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 10px;display:flex;align-items:center;gap:8px;box-shadow:0 1px 4px var(--shadow);cursor:pointer;transition:box-shadow 0.15s}
+.stat-mini:active{box-shadow:0 0 0 2px var(--green-mid)}
 .stat-mini-icon{font-size:1.3rem;width:30px;text-align:center}
 .stat-mini-num{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:500;color:var(--green);line-height:1}
 .stat-mini-lbl{font-size:0.67rem;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.04em}
@@ -1011,14 +1015,15 @@ const QUOTES = [
   'Im Garten lernt man Geduld — die schönste aller Tugenden.',
 ];
 function renderDashboard() {
-  var offene = db.aufgaben.filter(function(a){return !a.done;}).length;
+  var offene = db.aufgaben.filter(function(a){return !a.done&&a.typ!=='notiz';}).length;
+  var notizen = db.aufgaben.filter(function(a){return a.typ==='notiz';}).length;
   var saisonErnte = db.ernten.filter(function(e){var d=new Date(e.datum||'');return d.getFullYear()===new Date().getFullYear();}).length;
   var statsEl = $('dash-stats');
   if(statsEl) statsEl.innerHTML=
-    '<div class="stat-mini"><div class="stat-mini-icon">🌿</div><div><div class="stat-mini-num">'+db.pflanzen.length+'</div><div class="stat-mini-lbl">Pflanzen</div></div></div>'
-    +'<div class="stat-mini"><div class="stat-mini-icon">🌾</div><div><div class="stat-mini-num">'+db.beete.length+'</div><div class="stat-mini-lbl">Beete</div></div></div>'
-    +'<div class="stat-mini"><div class="stat-mini-icon">📅</div><div><div class="stat-mini-num">'+offene+'</div><div class="stat-mini-lbl">Aufgaben</div></div></div>'
-    +'<div class="stat-mini"><div class="stat-mini-icon">🧺</div><div><div class="stat-mini-num">'+saisonErnte+'</div><div class="stat-mini-lbl">Ernten</div></div></div>';
+    '<div class="stat-mini" onclick="showSec(\'pflanzen\')"><div class="stat-mini-icon">🌿</div><div><div class="stat-mini-num">'+db.pflanzen.length+'</div><div class="stat-mini-lbl">Pflanzen</div></div></div>'
+    +'<div class="stat-mini" onclick="showSec(\'beetplan\')"><div class="stat-mini-icon">🌾</div><div><div class="stat-mini-num">'+db.beete.length+'</div><div class="stat-mini-lbl">Beete</div></div></div>'
+    +'<div class="stat-mini" onclick="showSec(\'kalender\')"><div class="stat-mini-icon">📅</div><div><div class="stat-mini-num">'+offene+'</div><div class="stat-mini-lbl">Aufgaben</div></div></div>'
+    +'<div class="stat-mini" onclick="showSec(\'ernte\')"><div class="stat-mini-icon">🧺</div><div><div class="stat-mini-num">'+saisonErnte+'</div><div class="stat-mini-lbl">Ernten</div></div></div>';
 
   var upcoming = db.aufgaben.filter(function(a){return !a.done&&a.datum;}).sort(function(a,b){return a.datum.localeCompare(b.datum);}).slice(0,4);
   var todayStr = today();
@@ -1032,9 +1037,10 @@ function renderDashboard() {
       var diff=Math.round((new Date(a.datum)-new Date(todayStr))/(1000*60*60*24));
       var whenCls=diff<=0?'tw-heute':'tw-bald';
       var whenTxt=diff<0?'Überfällig':diff===0?'Heute':diff===1?'Morgen':'In '+diff+' Tagen';
-      html+='<div class="termin-item">'
+      var icon=a.typ==='notiz'?'📝':'📋';
+      html+='<div class="termin-item" onclick="showSec(\'kalender\');setTimeout(function(){selectDay(\''+a.datum+'\');},100)" style="cursor:pointer">'
         +'<div class="termin-date-box"><div class="termin-day">'+d.getDate()+'</div><div class="termin-mon">'+MONATE_K[d.getMonth()]+'</div></div>'
-        +'<div class="termin-info"><div class="termin-name">'+a.name+'</div><div class="termin-beet">'+(a.beet?beetName(a.beet):'')+'</div></div>'
+        +'<div class="termin-info"><div class="termin-name">'+icon+' '+a.name+'</div><div class="termin-beet">'+(a.beet?beetName(a.beet):'')+'</div></div>'
         +'<span class="termin-when '+whenCls+'">'+whenTxt+'</span>'
         +'</div>';
     });
@@ -1623,22 +1629,49 @@ function renderBeetLegende() {
 // ===== KALENDER =====
 function calNav(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++;}if(calMonth<0){calMonth=11;calYear--;}renderKalender();}
 function renderKalender() {
-  $('cal-month-label').textContent=`${MONATE[calMonth]} ${calYear}`;
-  const firstDay=new Date(calYear,calMonth,1);
-  let startDow=firstDay.getDay()-1; if(startDow<0)startDow=6;
-  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
-  const daysInPrev=new Date(calYear,calMonth,0).getDate();
-  const todayStr=today();
-  const taskDays=new Set(db.aufgaben.filter(a=>a.datum).map(a=>a.datum));
-  let html=WOCHENTAGE.map(d=>`<div class="cal-day-head">${d}</div>`).join('');
-  for(let i=0;i<startDow;i++){const day=daysInPrev-startDow+1+i;const d=`${calYear}-${String(calMonth).padStart(2,'0')}-${String(day).padStart(2,'0')}`;html+=`<div class="cal-day other-month ${taskDays.has(d)?'has-task':''}">${day}</div>`;}
-  for(let d=1;d<=daysInMonth;d++){const dstr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const isToday=dstr===todayStr;const isSel=dstr===calSelected;const hasTask=taskDays.has(dstr);html+=`<div class="cal-day ${isToday?'today':''} ${isSel&&!isToday?'selected':''} ${hasTask?'has-task':''}" onclick="selectDay('${dstr}')">${d}</div>`;}
-  const remaining=(7-((startDow+daysInMonth)%7))%7;
-  for(let i=1;i<=remaining;i++){const d=`${calYear}-${String(calMonth+2).padStart(2,'0')}-${String(i).padStart(2,'0')}`;html+=`<div class="cal-day other-month ${taskDays.has(d)?'has-task':''}">${i}</div>`;}
+  $('cal-month-label').textContent=MONATE[calMonth]+' '+calYear;
+  var firstDay=new Date(calYear,calMonth,1);
+  var startDow=firstDay.getDay()-1; if(startDow<0)startDow=6;
+  var daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  var daysInPrev=new Date(calYear,calMonth,0).getDate();
+  var todayStr=today();
+  var taskDays=new Set(db.aufgaben.filter(function(a){return a.datum&&a.typ!=='notiz';}).map(function(a){return a.datum;}));
+  var notizDays=new Set(db.aufgaben.filter(function(a){return a.datum&&a.typ==='notiz';}).map(function(a){return a.datum;}));
+  var html=WOCHENTAGE.map(function(d){return'<div class="cal-day-head">'+d+'</div>';}).join('');
+  for(var i=0;i<startDow;i++){
+    var day=daysInPrev-startDow+1+i;
+    var d=calYear+'-'+String(calMonth).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+    html+='<div class="cal-day other-month '+(taskDays.has(d)?'has-task':'')+(notizDays.has(d)?' has-notiz':'')+'">'+day+'</div>';
+  }
+  for(var day=1;day<=daysInMonth;day++){
+    var dstr=calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+    var isToday=dstr===todayStr; var isSel=dstr===calSelected;
+    var hasTask=taskDays.has(dstr); var hasNotiz=notizDays.has(dstr);
+    html+='<div class="cal-day '+(isToday?'today':'')+' '+(isSel&&!isToday?'selected':'')+' '+(hasTask?'has-task':'')+' '+(hasNotiz?'has-notiz':'')+'" onclick="selectDay(\''+dstr+'\')">'+day+'</div>';
+  }
+  var remaining=(7-((startDow+daysInMonth)%7))%7;
+  for(var i=1;i<=remaining;i++){
+    var d=calYear+'-'+String(calMonth+2).padStart(2,'0')+'-'+String(i).padStart(2,'0');
+    html+='<div class="cal-day other-month '+(taskDays.has(d)?'has-task':'')+(notizDays.has(d)?' has-notiz':'')+'">'+i+'</div>';
+  }
   $('cal-grid').innerHTML=html;
   renderAufgaben();
 }
-function selectDay(d){calSelected=calSelected===d?null:d;renderKalender();}
+function selectDay(d) {
+  if(calSelected===d) {
+    // Second tap on same day → open new entry with date prefilled
+    openAufgabeModal();
+    // Date is already set via calSelected in openAufgabeModal
+  } else {
+    calSelected=d;
+    renderKalender();
+    // Scroll to aufgabe list
+    setTimeout(function(){
+      var el=$('aufgabe-list');
+      if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+    },100);
+  }
+}
 function selAufgabeTyp(el) {
   document.querySelectorAll('#modal-aufgabe .chip').forEach(function(c){c.classList.remove('sel-beet');});
   el.classList.add('sel-beet');
@@ -1656,11 +1689,21 @@ function renderAufgaben() {
   var list=calSelected?db.aufgaben.filter(function(a){return a.datum===calSelected;}):db.aufgaben;
   list=[...list].sort(function(a,b){if(a.done!==b.done)return a.done?1:-1;return(a.datum||'').localeCompare(b.datum||'');});
   $('cal-selected-label').textContent=calSelected?'Einträge am '+fdate(calSelected):'Alle Aufgaben & Notizen';
+
+  // "+" button for selected day
+  var addForDay = calSelected
+    ? '<button class="add-fab" style="margin-bottom:10px;width:100%;justify-content:center" onclick="openAufgabeModal()">+ Eintrag für '+fdate(calSelected)+' hinzufügen</button>'
+    : '';
+
   if(!list.length){
-    el.innerHTML='<div class="empty" style="padding:24px 0"><div class="ei" style="font-size:2rem">'+(calSelected?'📅':'✅')+'</div><p>'+(calSelected?'Keine Einträge für diesen Tag.':'Keine Aufgaben vorhanden.')+'</p></div>';
+    el.innerHTML=addForDay+'<div class="empty" style="padding:16px 0"><div class="ei" style="font-size:2rem">'+(calSelected?'📅':'✅')+'</div><p>'+(calSelected?'Noch nichts an diesem Tag.':'Keine Einträge vorhanden.')+'</p></div>';
     return;
   }
-  el.innerHTML=list.map(function(a){
+
+  var aufgaben=list.filter(function(a){return a.typ!=='notiz';});
+  var notizen=list.filter(function(a){return a.typ==='notiz';});
+
+  function renderItem(a) {
     var isNotiz=a.typ==='notiz';
     var checkHtml=isNotiz
       ? '<div style="width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;margin-top:1px">📝</div>'
@@ -1679,7 +1722,19 @@ function renderAufgaben() {
       +(isNotiz?'':('<div class="priority-dot pd-'+(a.prioritaet||'mittel')+'"></div>'))
       +delBtn
       +'</div>';
-  }).join('');
+  }
+
+  var html=addForDay;
+  // Show Notizen first if any
+  if(notizen.length) {
+    html+='<div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:8px 0 6px;display:flex;align-items:center;gap:8px">📝 Notizen & Ereignisse <span style="flex:1;height:1px;background:var(--border);display:block"></span></div>';
+    html+=notizen.map(renderItem).join('');
+  }
+  if(aufgaben.length) {
+    if(notizen.length) html+='<div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:10px 0 6px;display:flex;align-items:center;gap:8px">📋 Aufgaben <span style="flex:1;height:1px;background:var(--border);display:block"></span></div>';
+    html+=aufgaben.map(renderItem).join('');
+  }
+  el.innerHTML=html;
 }
 
 function toggleAufgabe(id) {
