@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Mein Gartenbuch</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3d5c2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gartenbuch">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icon-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;0,700;1,300;1,500&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f0e6;
+  --bg2: #ede8dc;
+  --white: #ffffff;
+  --card: #ffffff;
+  --green: #3d5c2e;
+  --green2: #4a6f38;
+  --green-light: #e8f0e3;
+  --green-mid: #c5d9b8;
+  --sage: #8aab7a;
+  --gold: #c8973a;
+  --gold-light: #fdf3e1;
+  --red-soft: #e07060;
+  --text: #2a2015;
+  --text2: #5a5040;
+  --text3: #9a8f7a;
+  --border: #e0d8c8;
+  --border2: #d0c8b8;
+  --shadow: rgba(42,32,21,0.08);
+  --shadow2: rgba(42,32,21,0.14);
+  --r: 16px;
+  --r-sm: 10px;
+  --r-lg: 22px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overscroll-behavior:none}
+img{display:block}
+
+/* ===== TOP HEADER ===== */
+.top-header{
+  background:var(--white);border-bottom:1px solid var(--border);
+  padding:16px 20px;position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 12px var(--shadow);
+}
+.top-header-inner{display:flex;align-items:center;gap:12px}
+.app-logo{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:500;color:var(--green);flex:1;display:flex;align-items:center;gap:8px}
+.app-logo-sub{font-size:0.75rem;color:var(--text3);font-family:'Nunito',sans-serif;font-weight:400;display:block;margin-top:-2px}
+.hbtn{background:var(--green);color:#fff;border:none;padding:9px 16px;border-radius:var(--r-sm);font-size:0.8rem;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.2s}
+.hbtn:active{transform:scale(0.97)}
+.hbtn.ghost{background:var(--white);color:var(--green);border:1.5px solid var(--green)}
+.hbtn.icon-only{background:var(--bg2);color:var(--text2);border:none;width:38px;height:38px;padding:0;border-radius:50%;font-size:1.1rem;justify-content:center}
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:var(--green);
+  display:flex;align-items:center;
+  padding:0 0 env(safe-area-inset-bottom);
+  box-shadow:0 -4px 20px rgba(42,32,21,0.2);
+}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:12px 4px 10px;cursor:pointer;color:rgba(255,255,255,0.55);font-size:0.65rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;border:none;background:none;transition:color 0.2s}
+.nav-item .ni{font-size:1.15rem}
+.nav-item.active{color:#fff}
+.nav-item.active .ni-dot{width:4px;height:4px;border-radius:50%;background:#fff;margin:0 auto;margin-top:2px}
+.nav-fab{width:52px;height:52px;border-radius:50%;background:var(--sage);border:3px solid var(--green);color:#fff;font-size:1.6rem;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;box-shadow:0 4px 14px rgba(42,32,21,0.3);margin-top:-16px;transition:all 0.2s}
+.nav-fab:active{transform:scale(0.95)}
+
+/* ===== MAIN ===== */
+.main{padding:20px 16px 100px;max-width:900px;margin:0 auto}
+@media(min-width:480px){.main{padding:24px 20px 90px}}
+.section{display:none}
+.section.active{display:block}
+
+/* ===== CARDS ===== */
+.card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);box-shadow:0 2px 10px var(--shadow)}
+.card-pad{padding:20px}
+
+/* ===== SECTION TITLE ===== */
+.sec-title{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:500;color:var(--green);margin-bottom:4px}
+.sec-sub{color:var(--text3);font-size:0.83rem;margin-bottom:18px;font-weight:400}
+
+/* ===== DASHBOARD ===== */
+.welcome-card{
+  background:linear-gradient(135deg,#e8f0e3 0%,#f0ead8 60%,#e8f0e3 100%);
+  border-radius:var(--r-lg);border:1px solid var(--green-mid);
+  padding:22px;margin-bottom:14px;position:relative;overflow:hidden;
+}
+.welcome-card::after{
+  content:'🌿';position:absolute;right:16px;bottom:-4px;font-size:4rem;opacity:0.25;
+}
+.welcome-title{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:500;color:var(--green);margin-bottom:6px}
+.welcome-sub{font-size:0.88rem;color:var(--text2);line-height:1.6}
+
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-tile{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 6px var(--shadow)}
+.stat-icon{font-size:1.6rem;width:40px;text-align:center}
+.stat-num{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:500;color:var(--green);line-height:1}
+.stat-lbl{font-size:0.72rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-top:2px}
+
+.dash-section-title{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:500;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+
+.termin-item{display:flex;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+.termin-item:last-child{border-bottom:none}
+.termin-date-box{background:var(--green-light);border-radius:var(--r-sm);padding:6px 10px;text-align:center;min-width:44px;flex-shrink:0}
+.termin-day{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:500;color:var(--green);line-height:1}
+.termin-mon{font-size:0.65rem;text-transform:uppercase;color:var(--sage);font-weight:700;letter-spacing:0.05em}
+.termin-info{flex:1}
+.termin-name{font-weight:700;font-size:0.9rem;color:var(--text);margin-bottom:2px}
+.termin-beet{font-size:0.78rem;color:var(--text3)}
+.termin-when{font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:20px}
+.tw-heute{background:#fff3cd;color:#856404}
+.tw-bald{background:var(--green-light);color:var(--green)}
+
+.quote-card{background:var(--gold-light);border:1px solid #e8d8a0;border-radius:var(--r);padding:18px;margin-top:14px;position:relative}
+.quote-card::before{content:'❝';font-size:2rem;color:var(--gold);position:absolute;top:10px;left:14px;font-family:Georgia,serif;line-height:1}
+.quote-text{font-family:'Fraunces',serif;font-style:italic;font-size:0.95rem;color:var(--text2);padding-left:28px;line-height:1.6}
+
+/* ===== PFLANZEN ===== */
+.plant-card{
+  background:var(--card);border-radius:var(--r);border:1px solid var(--border);
+  display:flex;gap:0;overflow:hidden;box-shadow:0 2px 8px var(--shadow);
+  cursor:pointer;transition:box-shadow 0.2s;margin-bottom:10px;
+}
+.plant-card:active{box-shadow:0 1px 4px var(--shadow)}
+.plant-thumb{width:80px;min-height:90px;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:2.2rem;flex-shrink:0;overflow:hidden}
+.plant-thumb img{width:80px;height:100%;object-fit:cover}
+.plant-body{padding:12px 14px;flex:1;min-width:0}
+.plant-name{font-family:'Fraunces',serif;font-size:1rem;font-weight:500;color:var(--text);margin-bottom:3px}
+.plant-beet{font-size:0.75rem;color:var(--text3);margin-bottom:7px;display:flex;align-items:center;gap:4px}
+.tag-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px}
+.ptag{padding:2px 8px;border-radius:20px;font-size:0.7rem;font-weight:700}
+.ptag-green{background:var(--green-light);color:var(--green)}
+.ptag-gold{background:var(--gold-light);color:var(--gold)}
+.ptag-blue{background:#e8f4ff;color:#2a6ea6}
+.ptag-pink{background:#fde8f0;color:#c0507a}
+.plant-footer{display:flex;align-items:center;justify-content:space-between}
+.status-badge{padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700}
+.sb-gut{background:#e8f5e9;color:#2e7d32}
+.sb-mittel{background:#fff8e1;color:#f57f17}
+.sb-schlecht{background:#ffebee;color:#c62828}
+.sb-ruhend{background:#f5f5f5;color:#666}
+.last-entry{font-size:0.72rem;color:var(--text3)}
+
+/* ===== SEARCH & ADD ===== */
+.search-row{display:flex;gap:10px;margin-bottom:14px}
+.search-wrap{flex:1;position:relative}
+.search-wrap::before{content:'🔍';position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:0.9rem;pointer-events:none}
+.search-bar{width:100%;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:11px 12px 11px 36px;font-size:0.95rem;font-family:'Nunito',sans-serif;color:var(--text);outline:none;transition:border-color 0.2s}
+.search-bar:focus{border-color:var(--green)}
+.add-fab{background:var(--green);color:#fff;border:none;border-radius:var(--r-sm);padding:11px 16px;font-size:0.9rem;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;box-shadow:0 3px 10px rgba(61,92,46,0.3)}
+.add-fab:active{transform:scale(0.97)}
+
+/* ===== WISSEN ===== */
+.wissen-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wissen-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:16px;cursor:pointer;transition:box-shadow 0.2s;box-shadow:0 1px 6px var(--shadow)}
+.wissen-card:active{box-shadow:0 0 0 var(--shadow)}
+.wissen-icon{font-size:2rem;margin-bottom:8px}
+.wissen-name{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:500;color:var(--green);margin-bottom:4px}
+.wissen-desc{font-size:0.78rem;color:var(--text3);line-height:1.5}
+
+.wissen-detail-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:18px;margin-bottom:12px}
+.wissen-detail-title{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:500;color:var(--green);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.wissen-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.88rem;align-items:flex-start}
+.wissen-item:last-child{border-bottom:none}
+.wissen-item-key{color:var(--text3);font-weight:600;min-width:110px;flex-shrink:0;font-size:0.8rem}
+.wissen-item-val{color:var(--text);line-height:1.5}
+
+/* ===== BEET-PLAN ===== */
+.beet-grid-container{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:16px;margin-bottom:14px;overflow-x:auto}
+.beet-canvas{display:grid;gap:6px;min-width:280px}
+.beet-cell{
+  background:var(--green-light);border:1.5px solid var(--green-mid);
+  border-radius:8px;min-height:64px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;cursor:pointer;
+  padding:6px;transition:all 0.15s;position:relative;font-size:0.75rem;
+}
+.beet-cell:active{transform:scale(0.97)}
+.beet-cell.occupied{background:#e8f4e8;border-color:var(--sage)}
+.beet-cell.empty{border-style:dashed;background:rgba(255,255,255,0.5)}
+.beet-cell-name{font-weight:700;color:var(--green);line-height:1.2;margin-top:3px}
+.beet-cell-emoji{font-size:1.4rem}
+.beet-selector{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.beet-selector-btn{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 14px;font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:700;color:var(--text2);cursor:pointer;transition:all 0.15s}
+.beet-selector-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
+
+/* ===== KALENDER ===== */
+.cal-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.cal-nav{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-sm);width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;flex-shrink:0}
+.cal-month{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:500;color:var(--green);flex:1;text-align:center}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:16px}
+.cal-day-head{text-align:center;font-size:0.68rem;font-weight:700;color:var(--text3);padding:6px 0;text-transform:uppercase;letter-spacing:0.05em}
+.cal-day{
+  aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:0.85rem;cursor:pointer;position:relative;transition:background 0.15s;
+}
+.cal-day:active{background:var(--green-light)}
+.cal-day.today{background:var(--green);color:#fff;font-weight:700}
+.cal-day.has-task::after{content:'';position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--sage)}
+.cal-day.today.has-task::after{background:#fff}
+.cal-day.other-month{opacity:0.3}
+.cal-day.selected{background:var(--green-light);border:1.5px solid var(--green)}
+
+.aufgabe-item{display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--card);border-radius:var(--r-sm);border:1px solid var(--border);margin-bottom:8px}
+.aufgabe-item.typ-notiz{border-left:3px solid var(--gold);background:var(--gold-light)}
+.aufgabe-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all 0.2s;cursor:pointer}
+.aufgabe-check.done{background:var(--green);border-color:var(--green);color:#fff;font-size:0.7rem}
+.aufgabe-del{background:none;border:none;color:var(--text3);font-size:1rem;cursor:pointer;padding:2px 6px;border-radius:6px;transition:color 0.15s;flex-shrink:0}
+.aufgabe-del:active{color:#c62828}
+.aufgabe-intervall{font-size:.7rem;color:var(--sage);font-weight:700;margin-top:2px}
+.aufgabe-text{flex:1}
+.aufgabe-name{font-size:0.9rem;font-weight:700;color:var(--text);margin-bottom:2px}
+.aufgabe-name.done{text-decoration:line-through;color:var(--text3)}
+.aufgabe-meta{font-size:0.75rem;color:var(--text3)}
+.priority-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px}
+.pd-hoch{background:#e07060}
+.pd-mittel{background:var(--gold)}
+.pd-niedrig{background:var(--sage)}
+
+/* ===== ERNTE ===== */
+.ernte-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:14px 16px;margin-bottom:10px;cursor:pointer;display:flex;gap:12px;align-items:center}
+.ernte-icon{font-size:1.8rem;width:44px;text-align:center;flex-shrink:0}
+.ernte-name{font-family:'Fraunces',serif;font-size:1rem;font-weight:500;color:var(--text)}
+.ernte-meta{font-size:0.78rem;color:var(--text3);margin-top:2px}
+.ernte-menge{background:var(--gold-light);color:var(--gold);border:1px solid #e8d8a0;border-radius:var(--r-sm);padding:4px 10px;font-size:0.8rem;font-weight:700;white-space:nowrap;margin-left:auto}
+
+/* ===== NOTIZEN ===== */
+.notiz-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:16px;margin-bottom:10px;cursor:pointer;border-left:4px solid var(--sage)}
+.notiz-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:500;color:var(--text);margin-bottom:4px}
+.notiz-preview{font-size:0.85rem;color:var(--text3);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.5}
+.notiz-date{font-size:0.72rem;color:var(--text3);margin-top:8px}
+
+/* ===== MODAL ===== */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(20,15,8,0.55);backdrop-filter:blur(3px);z-index:200;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg);border-radius:24px 24px 0 0;width:100%;max-width:900px;max-height:92vh;overflow-y:auto;padding:24px 20px 44px;border:1px solid var(--border);border-bottom:none;animation:up 0.3s ease;box-shadow:0 -8px 40px rgba(20,15,8,0.2)}
+@keyframes up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mhandle{width:40px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 22px}
+.mtitle{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:500;color:var(--green);margin-bottom:20px}
+
+/* FORM */
+.fg{margin-bottom:15px}
+.fl{display:block;font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.fi,.fs,.ft{width:100%;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:0.95rem;font-family:'Nunito',sans-serif;color:var(--text);outline:none;transition:border-color 0.2s;appearance:none}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--green)}
+.fi::placeholder,.ft::placeholder{color:var(--text3)}
+.ft{resize:vertical;min-height:90px;line-height:1.6}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fs option{background:var(--white)}
+
+.spills{display:flex;gap:8px;flex-wrap:wrap}
+.spill{flex:1;min-width:80px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:10px 8px;text-align:center;font-size:0.82rem;font-weight:700;cursor:pointer;color:var(--text2);transition:all 0.15s}
+.spill.sg{background:#e8f5e9;border-color:#66bb6a;color:#2e7d32}
+.spill.sm{background:#fff8e1;border-color:#ffca28;color:#f57f17}
+.spill.ss{background:#ffebee;border-color:#ef9a9a;color:#c62828}
+.spill.sr{background:#f5f5f5;border-color:#bbb;color:#666}
+
+.photo-area{border:2px dashed var(--border2);border-radius:var(--r);padding:20px;text-align:center;cursor:pointer;position:relative;transition:border-color 0.2s}
+.photo-area:hover{border-color:var(--green)}
+.photo-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.photo-prev{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.ptwrap{position:relative;display:inline-block}
+.ptimg{width:68px;height:68px;object-fit:cover;border-radius:8px}
+.prem{position:absolute;top:-6px;right:-6px;background:#e07060;color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:0.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+.bp{width:100%;background:var(--green);color:#fff;border:none;padding:15px;border-radius:var(--r);font-size:1rem;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;margin-top:8px;box-shadow:0 3px 12px rgba(61,92,46,0.3);transition:all 0.15s}
+.bp:active{transform:scale(0.98)}
+.bs{width:100%;background:transparent;color:var(--text3);border:1.5px solid var(--border);padding:13px;border-radius:var(--r);font-size:0.9rem;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;margin-top:8px}
+.bd{width:100%;background:#ffebee;color:#c62828;border:1.5px solid #ef9a9a;padding:13px;border-radius:var(--r);font-size:0.9rem;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;margin-top:8px}
+
+/* DETAIL */
+.detail-photo-main{width:100%;height:200px;object-fit:cover;border-radius:var(--r);margin-bottom:14px;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:4rem;overflow:hidden}
+.detail-photo-main img{width:100%;height:200px;object-fit:cover;border-radius:var(--r)}
+.detail-name{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:500;color:var(--green);margin-bottom:6px}
+.detail-meta-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.tl-entry{display:flex;gap:12px;margin-bottom:14px;position:relative}
+.tl-entry::before{content:'';position:absolute;left:13px;top:28px;bottom:-14px;width:2px;background:var(--border)}
+.tl-entry:last-child::before{display:none}
+.tl-dot{width:28px;height:28px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;z-index:1}
+.tl-dot.sm{background:var(--gold)}
+.tl-dot.ss{background:var(--red-soft)}
+.tl-dot.sr{background:#bbb}
+.tl-box{background:var(--white);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 13px;flex:1;box-shadow:0 1px 4px var(--shadow)}
+.tl-date{font-size:0.72rem;color:var(--text3);margin-bottom:3px;font-weight:700}
+.tl-text{font-size:0.88rem;line-height:1.5;color:var(--text)}
+.tl-photos{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+.tl-photo{width:56px;height:56px;object-fit:cover;border-radius:7px;cursor:pointer}
+
+/* BACKUP */
+.backup-box{background:var(--green);border-radius:var(--r);padding:20px;color:#fff;margin-top:16px}
+.backup-box-title{font-family:'Fraunces',serif;font-size:1.1rem;margin-bottom:8px}
+.backup-box-sub{font-size:0.83rem;opacity:0.8;line-height:1.6;margin-bottom:14px}
+.backup-btn-w{background:var(--gold);color:var(--text);border:none;padding:12px 20px;border-radius:var(--r-sm);font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;width:100%;font-size:0.95rem;margin-bottom:8px}
+.file-pick{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.2);border-radius:var(--r-sm);padding:12px;cursor:pointer;font-size:0.88rem;color:rgba(255,255,255,0.8);margin-top:6px}
+.file-pick input{display:none}
+
+/* EMPTY */
+.empty{text-align:center;padding:44px 20px;color:var(--text3)}
+.empty .ei{font-size:3rem;margin-bottom:12px;opacity:0.5}
+.empty p{font-size:0.9rem;line-height:1.7}
+
+/* TOAST */
+.toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:11px 22px;border-radius:30px;font-size:0.88rem;font-weight:700;z-index:400;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(61,92,46,0.4)}
+.toast.show{opacity:1}
+
+/* FAB MENU */
+.fab-menu{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:150;display:flex;flex-direction:column;gap:8px;align-items:center;display:none}
+.fab-menu.open{display:flex}
+.fab-menu-item{background:var(--white);border:1.5px solid var(--border);border-radius:30px;padding:10px 18px;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.88rem;color:var(--text);cursor:pointer;box-shadow:0 4px 14px var(--shadow2);display:flex;align-items:center;gap:8px;white-space:nowrap}
+.fab-menu-item:active{background:var(--green-light)}
+.fab-overlay{position:fixed;inset:0;z-index:140;display:none}
+.fab-overlay.open{display:block}
+
+.divider{height:1px;background:var(--border);margin:16px 0}
+
+/* Month label */
+.month-label{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);padding:14px 0 6px;display:flex;align-items:center;gap:8px}
+.month-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ===== DASHBOARD 2-COL ===== */
+.dash-grid{display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
+@media(min-width:480px){.dash-grid{grid-template-columns:1fr 1fr}}
+.dash-welcome{background:linear-gradient(135deg,#e8f0e3 0%,#f0ead8 60%,#e8f0e3 100%);border-radius:var(--r-lg);border:1px solid var(--green-mid);padding:22px;position:relative;overflow:hidden}
+.dash-welcome::after{content:'🌿';position:absolute;right:16px;bottom:-4px;font-size:4rem;opacity:0.22}
+.dash-right{display:flex;flex-direction:column;gap:12px}
+.dash-stats-mini{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat-mini{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 10px;display:flex;align-items:center;gap:8px;box-shadow:0 1px 4px var(--shadow)}
+.stat-mini-icon{font-size:1.3rem;width:30px;text-align:center}
+.stat-mini-num{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:500;color:var(--green);line-height:1}
+.stat-mini-lbl{font-size:0.67rem;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.04em}
+.dash-termine-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:0 1px 6px var(--shadow)}
+.dash-pflanzen-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:0 1px 6px var(--shadow)}
+.dash-section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.dash-section-hdr-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px}
+.dash-alle-btn{font-size:0.78rem;color:var(--green);font-weight:700;background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif}
+.mini-plant-row{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.mini-plant-row:last-child{border-bottom:none}
+.mini-plant-thumb{width:40px;height:40px;border-radius:8px;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:1.2rem;overflow:hidden;flex-shrink:0}
+.mini-plant-thumb img{width:40px;height:40px;object-fit:cover;border-radius:8px}
+.mini-plant-name{font-weight:700;font-size:0.88rem;color:var(--text)}
+.mini-plant-meta{font-size:0.72rem;color:var(--text3)}
+.mini-plant-status{margin-left:auto;flex-shrink:0}
+.mini-plant-last{font-size:0.68rem;color:var(--text3);text-align:right}
+
+/* ===== MULTI-SELECT CHIPS ===== */
+.chip-group{display:flex;flex-wrap:wrap;gap:7px}
+.chip{padding:8px 14px;border-radius:20px;font-size:0.82rem;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--white);color:var(--text2);transition:all 0.15s;user-select:none}
+.chip:active{transform:scale(0.97)}
+.chip.sel-licht{background:#fff8e8;border-color:var(--gold);color:#8a6010}
+.chip.sel-wasser{background:#e8f4ff;border-color:#5b9bd5;color:#2a5a8a}
+.chip.sel-beet{background:var(--green-light);border-color:var(--sage);color:var(--green)}
+
+/* ===== BEET PFLANZE PICKER ===== */
+.beet-picker-list{max-height:220px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--r-sm);background:var(--white)}
+.beet-picker-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s}
+.beet-picker-item:last-child{border-bottom:none}
+.beet-picker-item:active{background:var(--green-light)}
+.beet-picker-item.selected{background:var(--green-light)}
+.bpi-photo{width:36px;height:36px;border-radius:7px;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:1.1rem;overflow:hidden;flex-shrink:0}
+.bpi-photo img{width:36px;height:36px;object-fit:cover;border-radius:7px}
+.bpi-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;margin-left:auto}
+.bpi-check.on{background:var(--green);border-color:var(--green);color:#fff;font-size:0.75rem}
+.samen-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:14px 16px;margin-bottom:10px;cursor:pointer;display:flex;gap:12px;align-items:center;box-shadow:0 1px 6px var(--shadow)}
+.samen-icon{font-size:1.8rem;width:44px;text-align:center;flex-shrink:0}
+.samen-name{font-family:'Fraunces',serif;font-size:1rem;font-weight:500;color:var(--text)}
+.samen-meta{font-size:0.78rem;color:var(--text3);margin-top:2px}
+.samen-menge{background:var(--gold-light);color:var(--gold);border:1px solid #e8d8a0;border-radius:var(--r-sm);padding:4px 10px;font-size:0.8rem;font-weight:700;white-space:nowrap;margin-left:auto}
+
+/* ===== WISSEN EIGENE EINTRÄGE ===== */
+.wissen-user-card{background:var(--gold-light);border:1px solid #e8d8a0;border-radius:var(--r);padding:16px;margin-bottom:10px;cursor:pointer}
+.wissen-user-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:500;color:var(--text);margin-bottom:4px}
+.wissen-user-preview{font-size:0.83rem;color:var(--text3);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+</style>
+</head>
+<body>
+
+<!-- TOP HEADER -->
+<header class="top-header">
+  <div class="top-header-inner">
+    <div class="app-logo">
+      🌿 <div><span>Mein Gartenbuch</span><span class="app-logo-sub">Dein grünes Tagebuch</span></div>
+    </div>
+    <button class="hbtn" onclick="exportData()">📤 Sichern</button>
+    <label class="hbtn ghost" style="cursor:pointer">📥 Laden<input type="file" accept=".json" onchange="importData(this)" style="display:none"></label>
+    <button class="hbtn icon-only" onclick="showSec('einstellungen')">⚙️</button>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- ÜBERSICHT -->
+  <section id="sec-uebersicht" class="section active">
+    <div class="dash-grid">
+      <!-- LEFT COL -->
+      <div>
+        <div class="dash-welcome" style="margin-bottom:14px">
+          <div class="welcome-title">Willkommen in deinem Garten! 🌱</div>
+          <div class="welcome-sub">Hier wächst nicht nur dein Garten,<br>sondern auch dein Wissen.</div>
+        </div>
+        <div class="dash-pflanzen-section">
+          <div class="dash-section-hdr">
+            <div class="dash-section-hdr-title">🌿 Pflanzenübersicht</div>
+            <button class="dash-alle-btn" onclick="showSec('pflanzen')">+ Neue Pflanze</button>
+          </div>
+          <div class="search-row" style="margin-bottom:10px">
+            <div class="search-wrap" style="flex:1"><input class="search-bar" type="search" placeholder="Pflanzen suchen…" id="psearch2" oninput="renderPflanzenMini()" style="margin-bottom:0"></div>
+          </div>
+          <div id="pflanz-mini-list"></div>
+          <button onclick="showSec('pflanzen')" style="width:100%;background:none;border:none;color:var(--green);font-weight:700;font-family:'Nunito',sans-serif;font-size:0.85rem;cursor:pointer;padding:10px 0 2px;text-align:center">Alle Pflanzen anzeigen →</button>
+        </div>
+      </div>
+      <!-- RIGHT COL -->
+      <div class="dash-right">
+        <div class="dash-stats-mini" id="dash-stats"></div>
+        <div class="dash-termine-card">
+          <div class="dash-section-hdr">
+            <div class="dash-section-hdr-title">📅 Nächste Termine</div>
+            <button class="dash-alle-btn" onclick="showSec('kalender')">Alle →</button>
+          </div>
+          <div id="dash-termine"></div>
+        </div>
+        <div class="quote-card">
+          <div class="quote-text" id="tagesquote">Ein Garten ist ein Freund, den man jeden Tag ein bisschen besser kennenlernt.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PFLANZEN -->
+  <section id="sec-pflanzen" class="section">
+    <h1 class="sec-title">Meine Pflanzen</h1>
+    <p class="sec-sub">Deine grünen Bewohner</p>
+    <div class="search-row">
+      <div class="search-wrap"><input class="search-bar" type="search" placeholder="Pflanzen suchen…" id="psearch" oninput="renderPflanzen()"></div>
+      <button class="add-fab" onclick="openPflanzModal()">+ Neue Pflanze</button>
+    </div>
+    <div id="plist"></div>
+  </section>
+
+  <!-- BEET-PLAN -->
+  <section id="sec-beetplan" class="section">
+    <h1 class="sec-title">Beet-Plan</h1>
+    <p class="sec-sub">Visueller Überblick deiner Beete</p>
+    <div class="beet-selector" id="beet-selector"></div>
+    <div class="beet-grid-container">
+      <div class="beet-canvas" id="beet-canvas"></div>
+    </div>
+    <button class="add-fab" style="width:100%;justify-content:center;margin-bottom:14px" onclick="openBeetModal()">+ Neues Beet anlegen</button>
+    <div id="beet-legende"></div>
+  </section>
+
+  <!-- KALENDER -->
+  <section id="sec-kalender" class="section">
+    <h1 class="sec-title">Kalender</h1>
+    <p class="sec-sub">Aufgaben & Termine im Blick</p>
+    <div class="card card-pad" style="margin-bottom:14px">
+      <div class="cal-header">
+        <button class="cal-nav" onclick="calNav(-1)">‹</button>
+        <div class="cal-month" id="cal-month-label"></div>
+        <button class="cal-nav" onclick="calNav(1)">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="font-family:'Fraunces',serif;font-size:1rem;font-weight:500;color:var(--text)" id="cal-selected-label">Alle Aufgaben</div>
+      <button class="add-fab" style="padding:9px 14px;font-size:0.82rem" onclick="openAufgabeModal()">+ Aufgabe / Notiz</button>
+    </div>
+    <div id="aufgabe-list"></div>
+  </section>
+
+  <!-- ERNTE -->
+  <section id="sec-ernte" class="section">
+    <h1 class="sec-title">Ernte</h1>
+    <p class="sec-sub">Was du geerntet hast</p>
+    <button class="add-fab" style="width:100%;justify-content:center;margin-bottom:16px" onclick="openErnteModal()">+ Ernte eintragen</button>
+    <div id="ernte-list"></div>
+  </section>
+
+  <!-- SAMENBANK -->
+  <section id="sec-samenbank" class="section">
+    <h1 class="sec-title">Samenbank</h1>
+    <p class="sec-sub">Dein eigenes Saatgut-Archiv</p>
+    <button class="add-fab" style="width:100%;justify-content:center;margin-bottom:16px" onclick="openSamenModal()">+ Samen eintragen</button>
+    <input class="search-bar" type="search" placeholder="🔍 Samen suchen…" id="samen-search" oninput="renderSamen()">
+    <div id="samen-list"></div>
+  </section>
+
+  <!-- WISSEN -->
+  <section id="sec-wissen" class="section">
+    <h1 class="sec-title">Pflanzenwissen</h1>
+    <p class="sec-sub">Tipps & deine eigenen Erkenntnisse</p>
+    <button class="add-fab" style="width:100%;justify-content:center;margin-bottom:16px" onclick="openWissenNeuModal()">+ Eigenen Eintrag hinzufügen</button>
+    <div id="wissen-user-list"></div>
+    <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin:16px 0 10px;display:flex;align-items:center;gap:8px">Bibliothek <span style="flex:1;height:1px;background:var(--border);display:block"></span></div>
+    <div class="wissen-grid" id="wissen-grid"></div>
+  </section>
+
+  <!-- EINSTELLUNGEN -->
+  <section id="sec-einstellungen" class="section">
+    <h1 class="sec-title">Einstellungen</h1>
+    <p class="sec-sub">Backup & App-Einstellungen</p>
+    <div class="stat-grid" id="settings-stats"></div>
+    <div class="backup-box">
+      <div class="backup-box-title">📦 Daten sichern</div>
+      <div class="backup-box-sub">Alle Daten werden automatisch im Browser gespeichert. Sichere regelmäßig auf deinem Gerät.</div>
+      <button class="backup-btn-w" onclick="exportData()">📥 Backup herunterladen (.json)</button>
+      <label class="file-pick">
+        <span>📂</span><span>Backup einspielen…</span>
+        <input type="file" accept=".json" onchange="importData(this)">
+      </label>
+      <div style="margin-top:12px;background:rgba(255,255,255,0.1);border-radius:var(--r-sm);padding:12px;font-size:0.8rem;opacity:0.8;line-height:1.6">
+        ⚠️ Bei Cache-Leerung gehen lokale Daten verloren. Backup auf Laptop/NAS schützt davor.
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="showSec('uebersicht',this)" id="nav-uebersicht"><span class="ni">🏡</span>Übersicht<div class="ni-dot"></div></button>
+  <button class="nav-item" onclick="showSec('pflanzen',this)" id="nav-pflanzen"><span class="ni">🌿</span>Pflanzen</button>
+  <button class="nav-item" onclick="showSec('beetplan',this)" id="nav-beetplan"><span class="ni">🌾</span>Beet-Plan</button>
+  <div class="nav-fab" onclick="toggleFab()">＋</div>
+  <button class="nav-item" onclick="showSec('samenbank',this)" id="nav-samenbank"><span class="ni">🫙</span>Samen</button>
+  <button class="nav-item" onclick="showSec('wissen',this)" id="nav-wissen"><span class="ni">📖</span>Wissen</button>
+  <button class="nav-item" onclick="showSec('einstellungen',this)" id="nav-einstellungen"><span class="ni">⚙️</span>Mehr</button>
+</nav>
+
+<!-- FAB MENU -->
+<div class="fab-overlay" id="fab-overlay" onclick="closeFab()"></div>
+<div class="fab-menu" id="fab-menu">
+  <div class="fab-menu-item" onclick="closeFab();openPflanzModal()">🌱 Neue Pflanze</div>
+  <div class="fab-menu-item" onclick="closeFab();openAufgabeModal()">📅 Aufgabe / Notiz</div>
+  <div class="fab-menu-item" onclick="closeFab();openErnteModal()">🧺 Ernte eintragen</div>
+  <div class="fab-menu-item" onclick="closeFab();openSamenModal()">🫙 Samen eintragen</div>
+  <div class="fab-menu-item" onclick="closeFab();openNotizModal()">📝 Neue Notiz</div>
+</div>
+
+<!-- MODALS -->
+<!-- Pflanze -->
+<div class="modal-overlay" id="modal-pflanze">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <h2 class="mtitle" id="pflanz-mtitle">Neue Pflanze</h2>
+    <input type="hidden" id="peid">
+    <div class="fg"><label class="fl">Name *</label><input class="fi" id="pn" placeholder="z.B. Tomate San Marzano, Brandolino Chili…"></div>
+    <div class="fg"><label class="fl">Art / Sorte</label><input class="fi" id="pa" placeholder="z.B. Solanum lycopersicum"></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Gepflanzt am</label><input class="fi" type="date" id="pd"></div>
+    </div>
+    <div class="fg">
+      <label class="fl">Beete / Standorte (mehrere möglich)</label>
+      <div class="beet-picker-list" id="p-beet-picker"></div>
+      <input type="hidden" id="pb" value="">
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Kategorie</label>
+        <select class="fs" id="pkategorie">
+          <option value="">— wählen —</option>
+          <option value="Fruchtgemüse">Fruchtgemüse</option>
+          <option value="Blattgemüse">Blattgemüse</option>
+          <option value="Wurzelgemüse">Wurzelgemüse</option>
+          <option value="Kräuter">Kräuter</option>
+          <option value="Nutzpflanze">Nutzpflanze</option>
+          <option value="Zierpflanze">Zierpflanze</option>
+          <option value="Staude">Staude</option>
+          <option value="Kletterpflanze">Kletterpflanze</option>
+          <option value="Obstbaum">Obstbaum</option>
+          <option value="Beerensträucher">Beerensträucher</option>
+          <option value="Duftpflanze">Duftpflanze</option>
+          <option value="Sonstiges">Sonstiges</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Lebensdauer</label>
+        <select class="fs" id="plebensdauer">
+          <option value="">— wählen —</option>
+          <option value="Einjährig">Einjährig</option>
+          <option value="Zweijährig">Zweijährig</option>
+          <option value="Mehrjährig">Mehrjährig</option>
+          <option value="Staude (winterhart)">Staude (winterhart)</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg">
+      <label class="fl">Standort / Licht (mehrere möglich)</label>
+      <div class="chip-group">
+        <div class="chip" data-v="Vollsonne (6h+)" onclick="toggleChip(this,'licht-chips','p-licht')">☀️ Vollsonne (6h+)</div>
+        <div class="chip" data-v="Halbschatten (3–6h)" onclick="toggleChip(this,'licht-chips','p-licht')">⛅ Halbschatten (3–6h)</div>
+        <div class="chip" data-v="Schatten (<3h)" onclick="toggleChip(this,'licht-chips','p-licht')">🌑 Schatten (&lt;3h)</div>
+        <div class="chip" data-v="Sonne bis Halbschatten" onclick="toggleChip(this,'licht-chips','p-licht')">🌤️ Sonne bis Halbschatten</div>
+        <div class="chip" data-v="Lichtdurchflutet" onclick="toggleChip(this,'licht-chips','p-licht')">💡 Lichtdurchflutet</div>
+      </div>
+      <input type="hidden" id="p-licht" value="">
+      <span id="licht-chips" style="display:none"></span>
+    </div>
+    <div class="fg">
+      <label class="fl">Wasserbedarf (mehrere möglich)</label>
+      <div class="chip-group">
+        <div class="chip" data-v="Gering (trockenheitstolerant)" onclick="toggleChip(this,'wasser-chips','p-wasser')">🏜️ Gering</div>
+        <div class="chip" data-v="Gering bis Mittel" onclick="toggleChip(this,'wasser-chips','p-wasser')">💧 Gering–Mittel</div>
+        <div class="chip" data-v="Mittel (regelmäßig)" onclick="toggleChip(this,'wasser-chips','p-wasser')">💧💧 Mittel</div>
+        <div class="chip" data-v="Mittel bis Hoch" onclick="toggleChip(this,'wasser-chips','p-wasser')">💧💧💧 Mittel–Hoch</div>
+        <div class="chip" data-v="Hoch (täglich)" onclick="toggleChip(this,'wasser-chips','p-wasser')">🫧 Hoch (täglich)</div>
+        <div class="chip" data-v="Staunässe vermeiden" onclick="toggleChip(this,'wasser-chips','p-wasser')">🚫 Staunässe meiden</div>
+      </div>
+      <input type="hidden" id="p-wasser" value="">
+      <span id="wasser-chips" style="display:none"></span>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Blütezeit</label><input class="fi" id="pbluezeit" placeholder="z.B. Mai–Juli"></div>
+      <div class="fg"><label class="fl">Erntezeit</label><input class="fi" id="perntezeit" placeholder="z.B. August–Oktober"></div>
+    </div>
+    <div class="fg"><label class="fl">Partnerpflanzen 🤝</label><input class="fi" id="ppartner" placeholder="z.B. Basilikum, Tagetes (kommagetrennt)"></div>
+    <div class="fg"><label class="fl">Nicht zusammen mit 🚫</label><input class="fi" id="punvertraglich" placeholder="z.B. Fenchel, Zwiebeln (kommagetrennt)"></div>
+    <div class="fg"><label class="fl">Zieht Nützlinge an 🐝</label><input class="fi" id="pnuetzlinge" placeholder="z.B. Bienen, Schwebfliegen, Marienkäfer…"></div>
+    <div class="fg"><label class="fl">Häufige Krankheiten & Schädlinge 🐛</label><input class="fi" id="pkrankheiten" placeholder="z.B. Mehltau, Blattläuse, Spinnmilben…"></div>
+    <div class="fg"><label class="fl">Profi-Tipp für Andalusien ☀️</label><textarea class="ft" id="pandtipp" style="min-height:80px" placeholder="z.B. Im andalusischen Sommer täglich gießen, Mulchen ist Pflicht…"></textarea></div>
+    <div class="fg"><label class="fl">Herkunft</label><input class="fi" id="pherkunft" placeholder="z.B. eigene Samenbank, Gärtnerei, Tausch"></div>
+    <div class="fg">
+      <label class="fl">Zustand</label>
+      <div class="spills">
+        <div class="spill sg" data-s="gut" onclick="setSt(this,'modal-pflanze','pst')">🌱 Gut</div>
+        <div class="spill" data-s="mittel" onclick="setSt(this,'modal-pflanze','pst')">🌤️ Mittel</div>
+        <div class="spill" data-s="schlecht" onclick="setSt(this,'modal-pflanze','pst')">🥀 Schlecht</div>
+        <div class="spill" data-s="ruhend" onclick="setSt(this,'modal-pflanze','pst')">💤 Ruhend</div>
+      </div>
+      <input type="hidden" id="pst" value="gut">
+    </div>
+    <div class="fg"><label class="fl">Erster Eintrag / Notiz</label><textarea class="ft" id="pnotiz" placeholder="Erste Beobachtungen…"></textarea></div>
+    <div class="fg">
+      <label class="fl">Foto</label>
+      <div class="photo-area" onclick="document.getElementById('pfi').click()">
+        <input type="file" id="pfi" accept="image/*" multiple onchange="prevPhotos(this,'pprev')">
+        <div style="font-size:.85rem;color:var(--text3)"><span style="font-size:1.4rem;display:block;margin-bottom:5px">📷</span>Foto aus Galerie oder aufnehmen</div>
+        <div class="photo-prev" id="pprev"></div>
+      </div>
+    </div>
+    <button class="bp" onclick="savePflanze()">💾 Pflanze speichern</button>
+    <button class="bs" onclick="cm('modal-pflanze')">Abbrechen</button>
+  </div>
+</div>
+
+<!-- Beet -->
+<div class="modal-overlay" id="modal-beet">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <h2 class="mtitle" id="beet-mtitle">Beet anlegen</h2>
+    <input type="hidden" id="beid">
+    <div class="fg"><label class="fl">Name *</label><input class="fi" id="bn" placeholder="z.B. Hochbeet 1, Kräuterspirale…"></div>
+    <div class="fg"><label class="fl">Beschreibung</label><textarea class="ft" id="bb" placeholder="z.B. vollsonnig, Südlage, Lehmboden…"></textarea></div>
+    <div class="fg"><label class="fl">Typ</label>
+      <select class="fs" id="bt" onchange="updateBeetGroesseUI()">
+        <option value="Hochbeet">Hochbeet</option>
+        <option value="Freilandbeet">Freilandbeet</option>
+        <option value="Kräuterspirale">Kräuterspirale</option>
+        <option value="Kübel / Topf">Kübel / Topf</option>
+        <option value="Gewächshaus">Gewächshaus</option>
+        <option value="Baum / Strauch">Baum / Strauch</option>
+        <option value="Sonstiges">Sonstiges</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label class="fl">Größe — Art wählen</label>
+      <div class="chip-group" id="beet-groesse-typ-chips">
+        <div class="chip sel-beet" data-gt="qm" onclick="selBeetGroesseTyp(this)">m²</div>
+        <div class="chip" data-gt="liter" onclick="selBeetGroesseTyp(this)">Liter</div>
+        <div class="chip" data-gt="masse" onclick="selBeetGroesseTyp(this)">H×T×B (cm)</div>
+        <div class="chip" data-gt="topf" onclick="selBeetGroesseTyp(this)">Topfgröße (Ø cm)</div>
+      </div>
+      <input type="hidden" id="bgroesse-typ" value="qm">
+    </div>
+    <div class="fg" id="bgroesse-qm-wrap">
+      <label class="fl">Fläche in m²</label>
+      <input class="fi" id="bgroesse-qm" type="number" placeholder="z.B. 2.5" step="0.1" min="0">
+    </div>
+    <div class="fg" id="bgroesse-liter-wrap" style="display:none">
+      <label class="fl">Volumen in Liter</label>
+      <input class="fi" id="bgroesse-liter" type="number" placeholder="z.B. 45" min="0">
+    </div>
+    <div id="bgroesse-masse-wrap" style="display:none">
+      <label class="fl">Maße in cm (Höhe × Tiefe × Breite)</label>
+      <div class="frow" style="gap:8px">
+        <div class="fg"><input class="fi" id="bgroesse-h" type="number" placeholder="Höhe" min="0"></div>
+        <div class="fg"><input class="fi" id="bgroesse-t" type="number" placeholder="Tiefe" min="0"></div>
+        <div class="fg"><input class="fi" id="bgroesse-b" type="number" placeholder="Breite" min="0"></div>
+      </div>
+    </div>
+    <div class="fg" id="bgroesse-topf-wrap" style="display:none">
+      <label class="fl">Topfdurchmesser in cm</label>
+      <input class="fi" id="bgroesse-topf" type="number" placeholder="z.B. 30" min="0">
+    </div>
+    <div class="fg">
+      <label class="fl">Foto (optional)</label>
+      <div class="photo-area" onclick="document.getElementById('beet-fi').click()">
+        <input type="file" id="beet-fi" accept="image/*" onchange="prevPhotos(this,'beet-foto-prev')">
+        <div style="font-size:.85rem;color:var(--text3)"><span style="font-size:1.3rem;display:block;margin-bottom:4px">📷</span>Foto des Beetes / Kübels</div>
+        <div class="photo-prev" id="beet-foto-prev"></div>
+      </div>
+    </div>
+    <button class="bp" onclick="saveBeet()">💾 Beet speichern</button>
+    <button class="bs" onclick="cm('modal-beet')">Abbrechen</button>
+  </div>
+</div>
+
+<!-- Aufgabe -->
+<div class="modal-overlay" id="modal-aufgabe">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <h2 class="mtitle" id="aufgabe-mtitle">Neue Aufgabe</h2>
+    <input type="hidden" id="aeid">
+
+    <!-- Typ: Aufgabe oder Notiz -->
+    <div class="fg">
+      <label class="fl">Typ</label>
+      <div class="chip-group">
+        <div class="chip sel-beet" data-at="aufgabe" onclick="selAufgabeTyp(this)" id="at-aufgabe">📋 Aufgabe</div>
+        <div class="chip" data-at="notiz" onclick="selAufgabeTyp(this)" id="at-notiz">📝 Notiz / Ereignis</div>
+      </div>
+      <input type="hidden" id="atyp" value="aufgabe">
+    </div>
+
+    <div class="fg"><label class="fl" id="an-label">Aufgabe *</label><input class="fi" id="an" placeholder="z.B. Erdbeeren gedüngt, Tomaten gießen…"></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Datum</label><input class="fi" type="date" id="adat"></div>
+      <div class="fg"><label class="fl">Beet / Ort</label><select class="fs" id="abeet"><option value="">— kein Beet —</option></select></div>
+    </div>
+
+    <!-- Nur bei Aufgaben: Priorität -->
+    <div class="fg" id="aprio-wrap">
+      <label class="fl">Priorität</label>
+      <select class="fs" id="aprio">
+        <option value="niedrig">🟢 Niedrig</option>
+        <option value="mittel" selected>🟡 Mittel</option>
+        <option value="hoch">🔴 Hoch</option>
+      </select>
+    </div>
+
+    <!-- Intervall-Wiederholung -->
+    <div class="fg" id="aintervall-wrap">
+      <label class="fl">🔁 Automatisch wiederholen</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="font-size:.88rem;color:var(--text2)">In</span>
+        <input class="fi" type="number" id="aintervall" placeholder="—" min="1" max="365" style="width:80px;flex-shrink:0">
+        <select class="fs" id="aintervall-einheit">
+          <option value="tage">Tagen</option>
+          <option value="wochen">Wochen</option>
+          <option value="monate">Monaten</option>
+        </select>
+        <span style="font-size:.82rem;color:var(--text3)">wiederholen</span>
+      </div>
+      <div style="font-size:.75rem;color:var(--text3);margin-top:5px">Beim Abhaken wird automatisch eine neue Aufgabe erstellt.</div>
+    </div>
+
+    <div class="fg"><label class="fl">Notiz</label><textarea class="ft" id="anotiz" placeholder="Details, Beobachtungen…" style="min-height:70px"></textarea></div>
+    <button class="bp" onclick="saveAufgabe()">💾 Speichern</button>
+    <button class="bs" onclick="cm('modal-aufgabe')">Abbrechen</button>
+  </div>
+</div>
+
+<!-- Ernte -->
+<div class="modal-overlay" id="modal-ernte">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <h2 class="mtitle">Ernte eintragen</h2>
+    <input type="hidden" id="eeid">
+    <div class="fg"><label class="fl">Pflanze / Produkt *</label><input class="fi" id="en" placeholder="z.B. Tomaten, Basilikum, Zucchini…"></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Menge</label><input class="fi" id="em" placeholder="z.B. 800g, 1 Korb, 12 Stück"></div>
+      <div class="fg"><label class="fl">Datum</label><input class="fi" type="date" id="edat"></div>
+    </div>
+    <div class="fg"><label class="fl">Beet</label><select class="fs" id="ebeet"><option value="">— kein Beet —</option></select></div>
+    <div class="fg"><label class="fl">Notiz</label><textarea class="ft" id="enotiz" placeholder="Qualität, Besonderheiten…" style="min-height:70px"></textarea></div>
+    <button class="bp" onclick="saveErnte()">💾 Ernte speichern</button>
+    <button class="bs" onclick="cm('modal-ernte')">Abbrechen</button>
+  </div>
+</div>
+
+<!-- Notiz -->
+<div class="modal-overlay" id="modal-notiz">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <h2 class="mtitle">Neue Notiz</h2>
+    <div class="fg"><label class="fl">Titel</label><input class="fi" id="notiz-titel" placeholder="Beobachtung, Idee, Erinnerung…"></div>
+    <div class="fg"><label class="fl">Text</label><textarea class="ft" id="notiz-text" style="min-height:140px" placeholder="Deine Notiz…"></textarea></div>
+    <button class="bp" onclick="saveNotiz()">💾 Notiz speichern</button>
+    <button class="bs" onclick="cm('modal-notiz')">Abbrechen</button>
+  </div>
+</div>
+
+<!-- Detail Pflanze -->
+<div class="modal-overlay" id="modal-detail"><div class="modal" id="mdc"></div></div>
+
+<!-- Tagebucheintrag -->
+<div class="modal-overlay" id="modal-eintrag">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <h2 class="mtitle" id="eintrag-mtitle">Neuer Tagebucheintrag</h2>
+    <input type="hidden" id="te-pid">
+    <input type="hidden" id="te-eid">
+    <div class="fg"><label class="fl">Datum</label><input class="fi" type="date" id="te-dat"></div>
+    <div class="fg">
+      <label class="fl">Zustand</label>
+      <div class="spills">
+        <div class="spill sg" data-s="gut" onclick="setSt(this,'modal-eintrag','te-st')">🌱 Gut</div>
+        <div class="spill" data-s="mittel" onclick="setSt(this,'modal-eintrag','te-st')">🌤️ Mittel</div>
+        <div class="spill" data-s="schlecht" onclick="setSt(this,'modal-eintrag','te-st')">🥀 Schlecht</div>
+        <div class="spill" data-s="ruhend" onclick="setSt(this,'modal-eintrag','te-st')">💤 Ruhend</div>
+      </div>
+      <input type="hidden" id="te-st" value="gut">
+    </div>
+    <div class="fg"><label class="fl">Beobachtung *</label><textarea class="ft" id="te-text" placeholder="Was hast du beobachtet?"></textarea></div>
+    <div class="fg">
+      <label class="fl">Bewässerung</label>
+      <select class="fs" id="te-wasser" onchange="toggleWasserCustom(this)">
+        <option value="">— nicht notiert —</option>
+        <option>wenig</option><option>normal</option><option>viel</option>
+        <option>nicht gegossen</option><option>Regen</option>
+        <option value="__custom">✏️ Eigene Angabe…</option>
+      </select>
+      <input class="fi" id="te-wasser-custom" placeholder="z.B. 2 Liter, Tröpfchenbewässerung…" style="margin-top:8px;display:none">
+    </div>
+    <div class="fg">
+      <label class="fl">Foto</label>
+      <div class="photo-area" onclick="document.getElementById('te-fi').click()">
+        <input type="file" id="te-fi" accept="image/*" multiple onchange="prevPhotos(this,'te-prev')">
+        <div style="font-size:.85rem;color:var(--text3)"><span style="font-size:1.4rem;display:block;margin-bottom:5px">📷</span>Foto aufnehmen oder aus Galerie</div>
+        <div class="photo-prev" id="te-prev"></div>
+      </div>
+    </div>
+    <button class="bp" onclick="saveEintrag()">💾 Eintrag speichern</button>
+    <button class="bd" id="eintrag-del-btn" style="display:none" onclick="deleteEintrag()">🗑️ Eintrag löschen</button>
+    <button class="bs" onclick="cm('modal-eintrag')">Abbrechen</button>
+  </div>
+</div>
+
+<!-- Wissen Detail -->
+<div class="modal-overlay" id="modal-wissen"><div class="modal" id="wissen-detail"></div></div>
+
+<!-- Samen -->
+<div class="modal-overlay" id="modal-samen">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <h2 class="mtitle" id="samen-mtitle">Samen eintragen</h2>
+    <input type="hidden" id="seid">
+    <div class="fg"><label class="fl">Pflanze / Sorte *</label><input class="fi" id="sn" placeholder="z.B. Brandolino Chili, Rote Bete Chioggia…"></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Menge</label><input class="fi" id="sm" placeholder="z.B. ~50 Körner, 1 Tütchen"></div>
+      <div class="fg"><label class="fl">Jahr gesammelt</label><input class="fi" type="number" id="sj" min="2020" max="2040" placeholder="2025"></div>
+    </div>
+    <div class="fg"><label class="fl">Herkunftspflanze</label><input class="fi" id="sh" placeholder="z.B. eigener Garten, Tauschbörse"></div>
+    <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin:14px 0 10px;display:flex;align-items:center;gap:8px">🌱 Keimung <span style="flex:1;height:1px;background:var(--border);display:block"></span></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Keimzeit</label><input class="fi" id="skeimzeit" placeholder="z.B. 7–14 Tage"></div>
+      <div class="fg"><label class="fl">Keimtemperatur</label><input class="fi" id="skeimtemp" placeholder="z.B. 18–22°C"></div>
+    </div>
+    <div class="fg"><label class="fl">Keimbedingungen</label><input class="fi" id="skeimbeding" placeholder="z.B. Lichtkeimer, dunkel, feucht halten…"></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Saattiefe</label><input class="fi" id="ssaattiefe" placeholder="z.B. 1 cm, auf Oberfläche"></div>
+      <div class="fg"><label class="fl">Lagerdauer (Jahre)</label><input class="fi" id="slagerdauer" placeholder="z.B. 3–5 Jahre"></div>
+    </div>
+    <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin:14px 0 10px;display:flex;align-items:center;gap:8px">📦 Lagerung <span style="flex:1;height:1px;background:var(--border);display:block"></span></div>
+    <div class="fg"><label class="fl">Aufbewahrung</label><input class="fi" id="sl" placeholder="z.B. Kühlschrank, Braunglastiegel, Papiertüte"></div>
+    <div class="fg"><label class="fl">Qualität / Besonderheiten</label><textarea class="ft" id="sno" style="min-height:80px" placeholder="z.B. Früchte besonders groß, gut gereift, eigene Selektion…"></textarea></div>
+    <button class="bp" onclick="saveSamen()">💾 Samen speichern</button>
+    <button class="bs" onclick="cm('modal-samen')">Abbrechen</button>
+  </div>
+</div>
+
+<!-- Wissen eigener Eintrag -->
+<div class="modal-overlay" id="modal-wissen-neu">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <h2 class="mtitle" id="wissen-neu-mtitle">Eigene Erkenntnis</h2>
+    <input type="hidden" id="wneid">
+    <div class="fg"><label class="fl">Titel *</label><input class="fi" id="wnt" placeholder="z.B. Meine Chili-Erfahrungen…"></div>
+    <div class="fg"><label class="fl">Inhalt *</label><textarea class="ft" id="wni" style="min-height:140px" placeholder="Was hast du beobachtet, ausprobiert oder gelernt?"></textarea></div>
+    <div class="fg"><label class="fl">Kategorie</label>
+      <select class="fs" id="wnk">
+        <option value="">— wählen —</option>
+        <option>Beobachtung</option><option>Tipp</option><option>Rezept / Verwendung</option>
+        <option>Schädlinge</option><option>Boden</option><option>Bewässerung</option><option>Mischkultur</option><option>Sonstiges</option>
+      </select>
+    </div>
+    <button class="bp" onclick="saveWissenEintrag()">💾 Speichern</button>
+    <button class="bs" onclick="cm('modal-wissen-neu')">Abbrechen</button>
+  </div>
+</div>
+
+<!-- Pflanze aus Bestand ins Beet -->
+<div class="modal-overlay" id="modal-beet-pflanz">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <h2 class="mtitle">Pflanze hinzufügen</h2>
+    <input type="hidden" id="bpick-beet-id">
+    <div style="margin-bottom:12px">
+      <input class="search-bar" type="search" id="bpick-search" placeholder="🔍 Pflanze suchen…" oninput="renderBeetPflanzPicker()" style="margin-bottom:0">
+    </div>
+    <p style="font-size:.82rem;color:var(--text3);margin-bottom:10px">Wähle eine oder mehrere vorhandene Pflanzen aus — oder lege eine neue an:</p>
+    <div id="bpick-list" style="max-height:320px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--r-sm);background:var(--white)"></div>
+    <button class="bp" onclick="confirmBeetPflanzPick()" style="margin-top:14px">✅ Auswahl übernehmen</button>
+    <button class="bs" onclick="newPflanzFromBeet()" style="margin-top:8px">🌱 Neue Pflanze anlegen</button>
+    <button class="bs" onclick="cm('modal-beet-pflanz')">Abbrechen</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== DATA =====
+const SK = 'gartenbuch_v2';
+let db = { pflanzen:[], beete:[], aufgaben:[], ernten:[], notizen:[], samen:[], wissenEigen:[] };
+let photos = {};
+let calYear, calMonth, calSelected = null;
+
+const $ = id => document.getElementById(id);
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2);
+const today = () => new Date().toISOString().slice(0,10);
+const toast = msg => { const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500); };
+const cm = id => $(id).classList.remove('open');
+const MONATE = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const MONATE_K = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+const WOCHENTAGE = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+
+// ===== INIT =====
+window.onload = () => {
+  try {
+    const r=localStorage.getItem(SK);
+    if(r){
+      db=JSON.parse(r);
+      ['aufgaben','ernten','notizen','samen','wissenEigen'].forEach(k=>{if(!db[k])db[k]=[];});
+    }
+  } catch(e){}
+  const now = new Date(); calYear=now.getFullYear(); calMonth=now.getMonth();
+  renderDashboard(); renderKalender(); initWissen();
+};
+
+function saveLocal() { try{localStorage.setItem(SK,JSON.stringify(db));}catch(e){toast('⚠️ Speicherfehler');} }
+function sched() { saveLocal(); }
+
+// ===== NAV =====
+let activeSec = 'uebersicht';
+function showSec(n, btn) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  $('sec-'+n).classList.add('active');
+  if(btn) btn.classList.add('active');
+  else { const nb=$('nav-'+n); if(nb) nb.classList.add('active'); }
+  activeSec = n;
+  if(n==='uebersicht') renderDashboard();
+  if(n==='pflanzen') renderPflanzen();
+  if(n==='beetplan') renderBeetplan();
+  if(n==='kalender') renderKalender();
+  if(n==='ernte') renderErnte();
+  if(n==='samenbank') renderSamen();
+  if(n==='wissen') renderWissen();
+  if(n==='einstellungen') renderEinstellungen();
+}
+
+function toggleFab() { $('fab-menu').classList.toggle('open'); $('fab-overlay').classList.toggle('open'); }
+function closeFab() { $('fab-menu').classList.remove('open'); $('fab-overlay').classList.remove('open'); }
+
+// ===== PHOTOS =====
+function prevPhotos(input,pid) {
+  if(!photos[pid])photos[pid]=[];
+  Array.from(input.files).forEach(f=>{
+    const rd=new FileReader(); rd.onload=e=>{
+      const img=new Image(); img.onload=()=>{
+        const c=document.createElement('canvas');
+        const M=900; let w=img.width,h=img.height;
+        if(w>M||h>M){if(w>h){h=h*M/w;w=M;}else{w=w*M/h;h=M;}}
+        c.width=w;c.height=h; c.getContext('2d').drawImage(img,0,0,w,h);
+        photos[pid].push(c.toDataURL('image/jpeg',0.78)); renderPrev(pid);
+      }; img.src=e.target.result;
+    }; rd.readAsDataURL(f);
+  }); input.value='';
+}
+function renderPrev(pid){
+  const el=$(pid); if(!el)return;
+  el.innerHTML=(photos[pid]||[]).map((s,i)=>`<div class="ptwrap"><img src="${s}" class="ptimg"><button class="prem" onclick="rmPh('${pid}',${i});event.stopPropagation()">✕</button></div>`).join('');
+}
+function rmPh(pid,i){photos[pid].splice(i,1);renderPrev(pid);}
+function clrPh(pid){photos[pid]=[];const el=$(pid);if(el)el.innerHTML='';}
+
+// ===== STATUS =====
+function setSt(el,mid,hid) {
+  document.querySelectorAll(`#${mid} .spill`).forEach(p=>p.className='spill');
+  const s=el.dataset.s; el.classList.add(s==='gut'?'sg':s==='mittel'?'sm':s==='schlecht'?'ss':'sr');
+  $(hid).value=s;
+}
+function initSt(mid,hid,val) {
+  document.querySelectorAll(`#${mid} .spill`).forEach(p=>{p.className='spill';if(p.dataset.s===val)p.classList.add(val==='gut'?'sg':val==='mittel'?'sm':val==='schlecht'?'ss':'sr');});
+  $(hid).value=val;
+}
+
+// ===== DASHBOARD =====
+const QUOTES = [
+  'Ein Garten ist ein Freund, den man jeden Tag ein bisschen besser kennenlernt.',
+  'Was wir pflanzen, ernten wir — im Garten und im Leben.',
+  'Der Garten lügt nie: Er zeigt uns, was wir ihm gegeben haben.',
+  'Wer einen Garten hat, hat alles, was die Seele braucht.',
+  'Im Garten lernt man Geduld — die schönste aller Tugenden.',
+];
+function renderDashboard() {
+  var offene = db.aufgaben.filter(function(a){return !a.done;}).length;
+  var saisonErnte = db.ernten.filter(function(e){var d=new Date(e.datum||'');return d.getFullYear()===new Date().getFullYear();}).length;
+  var statsEl = $('dash-stats');
+  if(statsEl) statsEl.innerHTML=
+    '<div class="stat-mini"><div class="stat-mini-icon">🌿</div><div><div class="stat-mini-num">'+db.pflanzen.length+'</div><div class="stat-mini-lbl">Pflanzen</div></div></div>'
+    +'<div class="stat-mini"><div class="stat-mini-icon">🌾</div><div><div class="stat-mini-num">'+db.beete.length+'</div><div class="stat-mini-lbl">Beete</div></div></div>'
+    +'<div class="stat-mini"><div class="stat-mini-icon">📅</div><div><div class="stat-mini-num">'+offene+'</div><div class="stat-mini-lbl">Aufgaben</div></div></div>'
+    +'<div class="stat-mini"><div class="stat-mini-icon">🧺</div><div><div class="stat-mini-num">'+saisonErnte+'</div><div class="stat-mini-lbl">Ernten</div></div></div>';
+
+  var upcoming = db.aufgaben.filter(function(a){return !a.done&&a.datum;}).sort(function(a,b){return a.datum.localeCompare(b.datum);}).slice(0,4);
+  var todayStr = today();
+  var termineEl = $('dash-termine');
+  if(!termineEl) return;
+  if(!upcoming.length) { termineEl.innerHTML='<div style="font-size:.85rem;color:var(--text3);padding:8px 0;font-style:italic">Keine offenen Aufgaben 🎉</div>'; }
+  else {
+    var html='';
+    upcoming.forEach(function(a){
+      var d=new Date(a.datum+'T00:00:00');
+      var diff=Math.round((new Date(a.datum)-new Date(todayStr))/(1000*60*60*24));
+      var whenCls=diff<=0?'tw-heute':'tw-bald';
+      var whenTxt=diff<0?'Überfällig':diff===0?'Heute':diff===1?'Morgen':'In '+diff+' Tagen';
+      html+='<div class="termin-item">'
+        +'<div class="termin-date-box"><div class="termin-day">'+d.getDate()+'</div><div class="termin-mon">'+MONATE_K[d.getMonth()]+'</div></div>'
+        +'<div class="termin-info"><div class="termin-name">'+a.name+'</div><div class="termin-beet">'+(a.beet?beetName(a.beet):'')+'</div></div>'
+        +'<span class="termin-when '+whenCls+'">'+whenTxt+'</span>'
+        +'</div>';
+    });
+    termineEl.innerHTML=html;
+  }
+  var qEl=$('tagesquote');
+  if(qEl) qEl.textContent = QUOTES[new Date().getDate() % QUOTES.length];
+  renderPflanzenMini();
+}
+
+function renderPflanzenMini() {
+  var el=$('pflanz-mini-list'); if(!el) return;
+  var q=(($('psearch2')||{}).value||'').toLowerCase();
+  // Show last 6 added, filtered by search
+  var list=db.pflanzen.slice().reverse().filter(function(p){
+    return !q||p.name.toLowerCase().includes(q)||(p.art||'').toLowerCase().includes(q)||(p.kategorie||'').toLowerCase().includes(q);
+  }).slice(0,6);
+  if(!list.length){
+    el.innerHTML='<div style="font-size:.85rem;color:var(--text3);padding:12px 0;font-style:italic">'+(db.pflanzen.length===0?'Noch keine Pflanzen angelegt.':'Kein Treffer.')+'</div>';
+    return;
+  }
+  var html='';
+  list.forEach(function(p){
+    var letzt=p.eintraege&&p.eintraege.length?p.eintraege[0]:null;
+    var foto=letzt&&letzt.fotos&&letzt.fotos.length?letzt.fotos[0]:null;
+    var beet=db.beete.find(function(b){return b.id===p.beet;});
+    var sbCls={gut:'sb-gut',mittel:'sb-mittel',schlecht:'sb-schlecht',ruhend:'sb-ruhend'}[p.status||'gut'];
+    var lastTxt=letzt?fdate(letzt.datum):'—';
+    var thumbHtml=foto?'<img src="'+foto+'" alt="">':'🌿';
+    html+='<div class="mini-plant-row" onclick="openDetail(this.dataset.pid)" data-pid="'+p.id+'">'
+      +'<div class="mini-plant-thumb">'+thumbHtml+'</div>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div class="mini-plant-name">'+p.name+'</div>'
+      +'<div class="mini-plant-meta">'+(beet?beet.name:'')+(p.kategorie?' · '+p.kategorie:'')+'</div>'
+      +'</div>'
+      +'<div class="mini-plant-status">'
+      +'<span class="status-badge '+sbCls+'" style="font-size:.65rem;padding:2px 7px">'+(p.status==='gut'?'🌱':p.status==='mittel'?'🌤️':p.status==='schlecht'?'🥀':'💤')+'</span>'
+      +'<div class="mini-plant-last">'+lastTxt+'</div>'
+      +'</div>'
+      +'</div>';
+  });
+  el.innerHTML=html;
+}
+
+function beetName(id) { var b=db.beete.find(function(x){return x.id===id;}); return b?b.name:''; }
+
+// ===== BEETE =====
+// ===== BEET GROESSE UI =====
+function selBeetGroesseTyp(el) {
+  document.querySelectorAll('#beet-groesse-typ-chips .chip').forEach(c=>c.classList.remove('sel-beet'));
+  el.classList.add('sel-beet');
+  $('bgroesse-typ').value = el.dataset.gt;
+  updateBeetGroesseUI();
+}
+function updateBeetGroesseUI() {
+  var typ = $('bgroesse-typ').value;
+  var isKübel = ($('bt').value||'').includes('Kübel') || ($('bt').value||'').includes('Topf');
+  ['qm','liter','masse','topf'].forEach(function(t){
+    var el = $('bgroesse-'+t+'-wrap');
+    if(el) el.style.display = (typ===t) ? 'block' : 'none';
+  });
+}
+
+// ===== BEETE =====
+function openBeetModal(id) {
+  $('beid').value=id||'';
+  clrPh('beet-foto-prev');
+  if(id){
+    var b=db.beete.find(function(x){return x.id===id;});
+    $('beet-mtitle').textContent=b.name+' bearbeiten';
+    $('bn').value=b.name; $('bb').value=b.beschreibung||''; $('bt').value=b.typ||'Freilandbeet';
+    // Restore size
+    var gt=b.groesseTyp||'qm';
+    $('bgroesse-typ').value=gt;
+    document.querySelectorAll('#beet-groesse-typ-chips .chip').forEach(function(c){
+      c.classList.toggle('sel-beet', c.dataset.gt===gt);
+    });
+    $('bgroesse-qm').value=b.groesseQm||'';
+    $('bgroesse-liter').value=b.groesseLiter||'';
+    $('bgroesse-h').value=b.groesseH||'';
+    $('bgroesse-t').value=b.groesseT||'';
+    $('bgroesse-b').value=b.groesseB||'';
+    $('bgroesse-topf').value=b.groesseTopf||'';
+    if(b.foto){photos['beet-foto-prev']=[b.foto];renderPrev('beet-foto-prev');}
+  } else {
+    $('beet-mtitle').textContent='Beet anlegen';
+    $('bn').value=''; $('bb').value=''; $('bt').value='Freilandbeet';
+    $('bgroesse-typ').value='qm';
+    document.querySelectorAll('#beet-groesse-typ-chips .chip').forEach(function(c){c.classList.toggle('sel-beet',c.dataset.gt==='qm');});
+    ['bgroesse-qm','bgroesse-liter','bgroesse-h','bgroesse-t','bgroesse-b','bgroesse-topf'].forEach(function(i){if($(i))$(i).value='';});
+  }
+  updateBeetGroesseUI();
+  $('modal-beet').classList.add('open');
+}
+function saveBeet() {
+  var name=$('bn').value.trim(); if(!name){toast('⚠️ Bitte Name eingeben');return;}
+  var id=$('beid').value;
+  var gt=$('bgroesse-typ').value||'qm';
+  var fotos=photos['beet-foto-prev']||[];
+  var obj={
+    id:id||uid(), name, beschreibung:$('bb').value, typ:$('bt').value,
+    groesseTyp:gt,
+    groesseQm:$('bgroesse-qm').value,
+    groesseLiter:$('bgroesse-liter').value,
+    groesseH:$('bgroesse-h')?$('bgroesse-h').value:'',
+    groesseT:$('bgroesse-t')?$('bgroesse-t').value:'',
+    groesseB:$('bgroesse-b')?$('bgroesse-b').value:'',
+    groesseTopf:$('bgroesse-topf')?$('bgroesse-topf').value:'',
+    foto:fotos.length?fotos[0]:(id?(db.beete.find(function(x){return x.id===id;})||{}).foto||'':'')
+  };
+  if(id){var i=db.beete.findIndex(function(x){return x.id===id;});db.beete[i]=obj;}else db.beete.push(obj);
+  sched();cm('modal-beet');refreshBeetSelects();renderBeetplan();toast('🌾 Beet gespeichert');
+}
+function beetGroesseLabel(b) {
+  if(!b) return '';
+  var gt=b.groesseTyp||'qm';
+  if(gt==='qm'&&b.groesseQm) return b.groesseQm+' m²';
+  if(gt==='liter'&&b.groesseLiter) return b.groesseLiter+' L';
+  if(gt==='masse'&&(b.groesseH||b.groesseT||b.groesseB)) return (b.groesseH||'?')+'×'+(b.groesseT||'?')+'×'+(b.groesseB||'?')+' cm';
+  if(gt==='topf'&&b.groesseTopf) return 'Ø '+b.groesseTopf+' cm';
+  return b.groesse?b.groesse+' m²':''; // legacy fallback
+}
+function refreshBeetSelects() {
+  const opts='<option value="">— kein Beet —</option>'+db.beete.map(b=>`<option value="${b.id}">${b.name}</option>`).join('');
+  ['pb','abeet','ebeet'].forEach(id=>{const el=$(id);if(el){const cv=el.value;el.innerHTML=opts;el.value=cv;}});
+}
+
+// ===== CHIP MULTI-SELECT =====
+function toggleChip(el, groupId, hiddenId) {
+  var v = el.dataset.v;
+  var isLicht = hiddenId === 'p-licht';
+  var cls = isLicht ? 'sel-licht' : 'sel-wasser';
+  el.classList.toggle(cls);
+  // Collect all selected
+  var parent = el.closest('.chip-group');
+  var vals = [];
+  parent.querySelectorAll('.chip.'+cls).forEach(function(c){vals.push(c.dataset.v);});
+  $(hiddenId).value = vals.join('|');
+}
+function setChips(containerId, hiddenId, savedVal, cls) {
+  var vals = savedVal ? savedVal.split('|') : [];
+  // Also handle legacy single value
+  if(vals.length===1 && vals[0].includes(',')) vals=[vals[0]]; // keep as-is
+  var container = document.querySelector('#'+containerId+' ~ .chip-group, .chip-group[data-gid="'+containerId+'"]');
+  // Find by proximity to hidden input
+  var hid = $(hiddenId);
+  if(!hid) return;
+  var fg = hid.closest('.fg')||hid.parentElement;
+  fg.querySelectorAll('.chip').forEach(function(c){
+    c.classList.remove('sel-licht','sel-wasser');
+    if(vals.includes(c.dataset.v)) c.classList.add(cls);
+  });
+  hid.value = vals.join('|');
+}
+
+// ===== BEET MULTI-PICKER =====
+var selectedBeete = []; // array of beet IDs
+function renderBeetPicker(selectedIds) {
+  selectedBeete = selectedIds || [];
+  var el = $('p-beet-picker'); if(!el) return;
+  if(!db.beete.length){
+    el.innerHTML='<div style="padding:12px;font-size:.85rem;color:var(--text3);font-style:italic">Noch keine Beete angelegt. Erst unter Beet-Plan ein Beet erstellen.</div>';
+    return;
+  }
+  el.innerHTML = db.beete.map(function(b){
+    var isSel = selectedBeete.includes(b.id);
+    var fotoHtml = b.foto ? '<img src="'+b.foto+'">' : '🌾';
+    return '<div class="beet-picker-item'+(isSel?' selected':'')+'" onclick="toggleBeetPick(\''+b.id+'\')">'
+      +'<div class="bpi-photo">'+fotoHtml+'</div>'
+      +'<div style="flex:1"><div style="font-weight:700;font-size:.9rem">'+b.name+'</div><div style="font-size:.75rem;color:var(--text3)">'+b.typ+(beetGroesseLabel(b)?' · '+beetGroesseLabel(b):'')+'</div></div>'
+      +'<div class="bpi-check'+(isSel?' on':'')+'">'+(isSel?'✓':'')+'</div>'
+      +'</div>';
+  }).join('');
+}
+function toggleBeetPick(beetId) {
+  var idx = selectedBeete.indexOf(beetId);
+  if(idx===-1) selectedBeete.push(beetId); else selectedBeete.splice(idx,1);
+  renderBeetPicker(selectedBeete);
+}
+
+// ===== PFLANZEN =====
+function openPflanzModal(id) {
+  clrPh('pprev');
+  $('peid').value=id||'';
+  if(id){
+    var p=db.pflanzen.find(function(x){return x.id===id;});
+    $('pflanz-mtitle').textContent=p.name+' bearbeiten';
+    $('pn').value=p.name; $('pa').value=p.art||''; $('pd').value=p.datum||'';
+    $('ppartner').value=(p.partner||[]).join(', ');
+    $('punvertraglich').value=(p.unvertraglich||[]).join(', ');
+    $('pnuetzlinge').value=p.nuetzlinge||'';
+    $('pkrankheiten').value=p.krankheiten||'';
+    $('pandtipp').value=p.andtipp||'';
+    $('pherkunft').value=p.herkunft||''; $('pkategorie').value=p.kategorie||'';
+    $('plebensdauer').value=p.lebensdauer||'';
+    $('pbluezeit').value=p.bluezeit||''; $('perntezeit').value=p.erntezeit||'';
+    $('pnotiz').value='';
+    // Multi-beet: support both old single beet and new array
+    var beetIds = p.beete||[]; if(!beetIds.length&&p.beet) beetIds=[p.beet];
+    renderBeetPicker(beetIds);
+    // Licht chips
+    setChips('licht-chips','p-licht',p.licht||'','sel-licht');
+    // Wasser chips
+    setChips('wasser-chips','p-wasser',p.wasser||'','sel-wasser');
+    initSt('modal-pflanze','pst',p.status||'gut');
+  } else {
+    $('pflanz-mtitle').textContent='Neue Pflanze';
+    ['pn','pa','ppartner','punvertraglich','pherkunft','pnotiz','pbluezeit','perntezeit','pnuetzlinge','pkrankheiten','pandtipp'].forEach(function(i){$(i).value='';});
+    $('pd').value=today(); $('pkategorie').value=''; $('plebensdauer').value='';
+    $('p-licht').value=''; $('p-wasser').value='';
+    renderBeetPicker([]);
+    // Clear all chips
+    document.querySelectorAll('#modal-pflanze .chip').forEach(function(c){c.classList.remove('sel-licht','sel-wasser');});
+    initSt('modal-pflanze','pst','gut');
+  }
+  $('modal-pflanze').classList.add('open');
+}
+function savePflanze() {
+  var name=$('pn').value.trim(); if(!name){toast('⚠️ Bitte Name eingeben');return;}
+  var id=$('peid').value||uid(); var isNew=!$('peid').value;
+  var fotos=photos['pprev']||[]; var notiz=$('pnotiz').value.trim(); var status=$('pst').value;
+  // Beete
+  var beete=selectedBeete.slice();
+  var beet=beete.length?beete[0]:''; // primary beet for backwards compat
+  // Licht / Wasser (pipe-separated)
+  var licht=$('p-licht').value;
+  var wasser=$('p-wasser').value;
+  var obj={id,name,
+    art:$('pa').value, datum:$('pd').value,
+    beet:beet, beete:beete,
+    partner:$('ppartner').value.split(',').map(function(s){return s.trim();}).filter(Boolean),
+    unvertraglich:$('punvertraglich').value.split(',').map(function(s){return s.trim();}).filter(Boolean),
+    herkunft:$('pherkunft').value, kategorie:$('pkategorie').value,
+    lebensdauer:$('plebensdauer').value,
+    licht:licht, wasser:wasser,
+    bluezeit:$('pbluezeit').value, erntezeit:$('perntezeit').value,
+    nuetzlinge:$('pnuetzlinge').value,
+    krankheiten:$('pkrankheiten').value,
+    andtipp:$('pandtipp').value,
+    status, eintraege:isNew?[]:(db.pflanzen.find(function(x){return x.id===id;})||{}).eintraege||[]};
+  if(notiz||fotos.length) obj.eintraege.unshift({id:uid(),datum:today(),text:notiz,status,wasser:'',fotos});
+  if(!isNew){var i=db.pflanzen.findIndex(function(x){return x.id===id;});db.pflanzen[i]=obj;}else db.pflanzen.push(obj);
+  sched(); cm('modal-pflanze'); renderPflanzen(); renderDashboard(); toast('🌱 Pflanze gespeichert');
+}
+
+function renderPflanzen() {
+  const el=$('plist'); if(!el)return;
+  const q=(($('psearch')||{}).value||'').toLowerCase();
+  let list=db.pflanzen;
+  if(q)list=list.filter(p=>
+    p.name.toLowerCase().includes(q)||
+    (p.art||'').toLowerCase().includes(q)||
+    (p.kategorie||'').toLowerCase().includes(q)||
+    (p.licht||'').toLowerCase().includes(q)||
+    (p.partner||[]).join(' ').toLowerCase().includes(q)
+  );
+  if(!list.length){el.innerHTML=db.pflanzen.length===0?'<div class="empty"><div class="ei">🌱</div><p>Noch keine Pflanzen.<br>Leg jetzt deine erste an!</p></div>':'<div class="empty"><div class="ei">🔍</div><p>Kein Treffer</p></div>';return;}
+  let html='';let lastMonth='';
+  list.forEach(p=>{
+    if(p.datum){const d=new Date(p.datum+'T00:00:00');const mo=MONATE[d.getMonth()]+' '+d.getFullYear();if(mo!==lastMonth){html+='<div class="month-label">'+mo+'</div>';lastMonth=mo;}}
+    html+=plantCard(p);
+  });
+  el.innerHTML=html;
+}
+function plantCard(p) {
+  var beetIds=p.beete&&p.beete.length?p.beete:(p.beet?[p.beet]:[]);
+  var beetNames=beetIds.map(function(id){var b=db.beete.find(function(x){return x.id===id;});return b?b.name:'';}).filter(Boolean);
+  var letzt=p.eintraege&&p.eintraege.length?p.eintraege[0]:null;
+  var foto=letzt&&letzt.fotos&&letzt.fotos.length?letzt.fotos[0]:null;
+  var sbCls={gut:'sb-gut',mittel:'sb-mittel',schlecht:'sb-schlecht',ruhend:'sb-ruhend'}[p.status||'gut'];
+  var lastTxt=letzt?'Zuletzt: '+fdate(letzt.datum):'Noch kein Eintrag';
+  var lichtVals=(p.licht||'').split('|').filter(Boolean);
+  var lichtIcon=lichtVals.length&&lichtVals[0].startsWith('Vollsonne')?'☀️':lichtVals.length&&lichtVals[0].startsWith('Halbschatten')?'⛅':lichtVals.length?'🌤️':'';
+  var thumbHtml=foto?'<img src="'+foto+'" alt="">':'🌿';
+  var artHtml=p.art?' &middot; <em>'+p.art+'</em>':'';
+  var tagsArr=[];
+  if(lichtVals.length)tagsArr.push('<span class="ptag ptag-gold">'+lichtIcon+' '+lichtVals.join(' / ')+'</span>');
+  if(p.kategorie)tagsArr.push('<span class="ptag ptag-green">'+p.kategorie+'</span>');
+  var tagsHtml=tagsArr.length?'<div class="tag-row">'+tagsArr.join('')+'</div>':'';
+  var statusTxt=p.status==='gut'?'🌱 Gut':p.status==='mittel'?'🌤️ Mittel':p.status==='schlecht'?'🥀 Schlecht':'💤 Ruhend';
+  var h='<div class="plant-card" onclick="openDetail(this.dataset.pid)" data-pid="'+p.id+'">';
+  h+='<div class="plant-thumb">'+thumbHtml+'</div>';
+  h+='<div class="plant-body">';
+  h+='<div class="plant-name">'+p.name+'</div>';
+  h+='<div class="plant-beet">🌾 '+(beetNames.length?beetNames.join(', '):'Kein Beet')+artHtml+'</div>';
+  h+=tagsHtml;
+  h+='<div class="plant-footer">';
+  h+='<span class="status-badge '+sbCls+'">'+statusTxt+'</span>';
+  h+='<span class="last-entry">'+lastTxt+'</span>';
+  h+='</div></div></div>';
+  return h;
+}
+const fdate = s=>{if(!s)return'';const[y,m,d]=s.split('-');return`${d}.${m}.${y}`;};
+
+// ===== DETAIL =====
+function openDetail(id) {
+  var p=db.pflanzen.find(function(x){return x.id===id;}); if(!p)return;
+  // Multi-beet
+  var beetIds=p.beete&&p.beete.length?p.beete:(p.beet?[p.beet]:[]);
+  var beetTags=beetIds.map(function(bid){var b=db.beete.find(function(b){return b.id===bid;});return b?'<span class="ptag ptag-green">🌾 '+b.name+'</span>':'';}).filter(Boolean).join(' ');
+  var sbCls={gut:'sb-gut',mittel:'sb-mittel',schlecht:'sb-schlecht',ruhend:'sb-ruhend'}[p.status||'gut'];
+  var foto=p.eintraege&&p.eintraege.length&&p.eintraege[0].fotos&&p.eintraege[0].fotos.length?p.eintraege[0].fotos[0]:null;
+  var tl=(p.eintraege||[]).map(function(e){
+    var dotCls=e.status==='mittel'?'sm':e.status==='schlecht'?'ss':e.status==='ruhend'?'sr':'';
+    var statusIcon=e.status==='gut'?'🌱':e.status==='mittel'?'🌤️':e.status==='schlecht'?'🥀':'💤';
+    var wasserHtml=e.wasser?' · 💧'+e.wasser:'';
+    var textHtml=e.text||'<em style="color:var(--text3)">kein Text</em>';
+    var fotosHtml='';
+    if(e.fotos&&e.fotos.length){fotosHtml='<div class="tl-photos">'+e.fotos.map(function(f){return'<img src="'+f+'" class="tl-photo" onclick="openLB(this.src);event.stopPropagation()">';}).join('')+'</div>';}
+    return '<div class="tl-entry">'
+      +'<div class="tl-dot '+dotCls+'">'+statusIcon+'</div>'
+      +'<div class="tl-box">'
+      +'<div class="tl-date" style="display:flex;align-items:center;justify-content:space-between">'
+      +'<span>'+fdate(e.datum)+wasserHtml+'</span>'
+      +'<button onclick="openEintragModal(\''+p.id+'\',\''+e.id+'\');cm(\'modal-detail\')" style="background:none;border:none;color:var(--text3);font-size:.75rem;cursor:pointer;padding:2px 6px;border-radius:6px;font-family:\'Nunito\',sans-serif">✏️ Bearbeiten</button>'
+      +'</div>'
+      +'<div class="tl-text">'+textHtml+'</div>'
+      +fotosHtml
+      +'</div></div>';
+  }).join('');
+  var fotoHtml=foto?'<div class="detail-photo-main"><img src="'+foto+'" alt=""></div>':'<div class="detail-photo-main">🌿</div>';
+  var statusTxt2=p.status==='gut'?'🌱 Gut':p.status==='mittel'?'🌤️ Mittel':p.status==='schlecht'?'🥀 Schlecht':'💤 Ruhend';
+  var datumHtml=p.datum?'<span class="ptag ptag-green">📅 seit '+fdate(p.datum)+'</span>':'';
+  var katHtml=p.kategorie?'<span class="ptag ptag-gold">'+p.kategorie+'</span>':'';
+  var ldHtml=p.lebensdauer?'<span class="ptag ptag-blue">'+p.lebensdauer+'</span>':'';
+  var partnerHtml='';
+  if(p.partner&&p.partner.length){partnerHtml='<div style="margin-bottom:8px"><span style="font-size:.75rem;color:var(--text3);font-weight:700">🤝 Partner: </span>'+p.partner.map(function(pp){return'<span class="ptag ptag-pink">'+pp+'</span>';}).join(' ')+'</div>';}
+  var unvertrHtml='';
+  if(p.unvertraglich&&p.unvertraglich.length){unvertrHtml='<div style="margin-bottom:8px"><span style="font-size:.75rem;color:var(--text3);font-weight:700">🚫 Nicht mit: </span>'+p.unvertraglich.map(function(pp){return'<span class="ptag" style="background:#ffebee;color:#c62828">'+pp+'</span>';}).join(' ')+'</div>';}
+  var herkunftHtml=p.herkunft?'<div style="font-size:.83rem;color:var(--text3);margin-bottom:8px">🌍 Herkunft: '+p.herkunft+'</div>':'';
+  var nuetzHtml=p.nuetzlinge?'<div style="margin-bottom:8px;font-size:.85rem"><span style="font-weight:700;color:var(--text3)">🐝 Nützlinge: </span>'+p.nuetzlinge+'</div>':'';
+  var krankHtml=p.krankheiten?'<div style="margin-bottom:8px;font-size:.85rem"><span style="font-weight:700;color:var(--text3)">🐛 Krankheiten/Schädlinge: </span>'+p.krankheiten+'</div>':'';
+  var andtippHtml=p.andtipp?'<div style="margin-bottom:12px;background:#fff8e8;border:1px solid #e8d8a0;border-radius:var(--r-sm);padding:12px"><div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gold);margin-bottom:5px">☀️ Profi-Tipp Andalusien</div><div style="font-size:.88rem;color:var(--text2);line-height:1.6">'+p.andtipp+'</div></div>':'';
+  // Attributes — pipe-separated licht/wasser
+  var lichtVals=(p.licht||'').split('|').filter(Boolean);
+  var wasserVals=(p.wasser||'').split('|').filter(Boolean);
+  var attrParts=[];
+  if(lichtVals.length) attrParts.push('☀️ '+lichtVals.join(' / '));
+  if(wasserVals.length) attrParts.push('💧 '+wasserVals.join(' / '));
+  if(p.bluezeit) attrParts.push('🌸 Blüte: '+p.bluezeit);
+  if(p.erntezeit) attrParts.push('🧺 Ernte: '+p.erntezeit);
+  var attrHtml=attrParts.length?'<div style="background:var(--green-light);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:8px">'+attrParts.map(function(a){return'<span style="font-size:.8rem;color:var(--green);font-weight:600">'+a+'</span>';}).join('')+'</div>':'';
+  var tlEmpty='<div style="font-size:.85rem;color:var(--text3);font-style:italic;padding:10px 0">Noch keine Einträge.</div>';
+  $('mdc').innerHTML='<div class="mhandle"></div>'
+    +fotoHtml
+    +'<div class="detail-name">'+p.name+'</div>'
+    +(p.art?'<div style="font-size:.85rem;color:var(--text3);font-style:italic;margin-bottom:10px">'+p.art+'</div>':'')
+    +'<div class="detail-meta-row">'
+    +'<span class="status-badge '+sbCls+'">'+statusTxt2+'</span>'
+    +datumHtml+beetTags+katHtml+ldHtml
+    +'</div>'
+    +attrHtml
+    +partnerHtml+unvertrHtml+nuetzHtml+krankHtml+andtippHtml+herkunftHtml
+    +'<button class="add-fab" style="width:100%;justify-content:center;margin-bottom:12px" onclick="openEintragModal(this.dataset.pid)" data-pid="'+p.id+'">+ Neuer Tagebucheintrag</button>'
+    +'<button class="bs" style="margin-bottom:16px" onclick="editPflanzFromDetail(this.dataset.pid)" data-pid="'+p.id+'">✏️ Pflanze bearbeiten</button>'
+    +'<div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:12px">Tagebuch ('+(p.eintraege||[]).length+' Einträge)</div>'
+    +(tl||tlEmpty)
+    +'<button class="bs" style="margin-top:16px" onclick="closeDetailModal()">Schließen</button>'
+    +'<button class="bd" onclick="delPflanze(this.dataset.pid)" data-pid="'+p.id+'">🗑️ Pflanze löschen</button>';
+  $('modal-detail').classList.add('open');
+}
+
+function closeDetailModal(){cm('modal-detail');}
+function editPflanzFromDetail(pid){openPflanzModal(pid);cm('modal-detail');}
+function delPflanze(id){if(!confirm('Pflanze wirklich löschen?'))return;db.pflanzen=db.pflanzen.filter(x=>x.id!==id);sched();cm('modal-detail');renderPflanzen();renderDashboard();toast('🗑️ Gelöscht');}
+
+// ===== EINTRAG =====
+function toggleWasserCustom(sel) {
+  var custom = $('te-wasser-custom');
+  custom.style.display = sel.value === '__custom' ? 'block' : 'none';
+  if (sel.value !== '__custom') custom.value = '';
+}
+
+function openEintragModal(pid, eid) {
+  $('te-pid').value = pid;
+  $('te-eid').value = eid || '';
+  $('te-wasser-custom').style.display = 'none';
+  $('te-wasser-custom').value = '';
+  clrPh('te-prev');
+
+  if (eid) {
+    // Edit mode
+    var p = db.pflanzen.find(function(x){return x.id===pid;});
+    var e = p && (p.eintraege||[]).find(function(x){return x.id===eid;});
+    if (!e) return;
+    $('eintrag-mtitle').textContent = 'Eintrag bearbeiten';
+    $('te-dat').value = e.datum || today();
+    $('te-text').value = e.text || '';
+    // Handle custom wasser value
+    var standardWasser = ['','wenig','normal','viel','nicht gegossen','Regen'];
+    if (e.wasser && !standardWasser.includes(e.wasser)) {
+      $('te-wasser').value = '__custom';
+      $('te-wasser-custom').value = e.wasser;
+      $('te-wasser-custom').style.display = 'block';
+    } else {
+      $('te-wasser').value = e.wasser || '';
+    }
+    initSt('modal-eintrag','te-st', e.status || 'gut');
+    $('eintrag-del-btn').style.display = 'block';
+  } else {
+    // New entry
+    $('eintrag-mtitle').textContent = 'Neuer Tagebucheintrag';
+    $('te-dat').value = today();
+    $('te-text').value = '';
+    $('te-wasser').value = '';
+    initSt('modal-eintrag','te-st','gut');
+    $('eintrag-del-btn').style.display = 'none';
+  }
+  $('modal-eintrag').classList.add('open');
+}
+
+function saveEintrag() {
+  var text = $('te-text').value.trim();
+  var fotos = photos['te-prev'] || [];
+  if (!text && !fotos.length) { toast('⚠️ Text oder Foto bitte'); return; }
+  var pid = $('te-pid').value;
+  var eid = $('te-eid').value;
+  var p = db.pflanzen.find(function(x){return x.id===pid;}); if (!p) return;
+  // Resolve water value
+  var wasserVal = $('te-wasser').value === '__custom'
+    ? $('te-wasser-custom').value.trim()
+    : $('te-wasser').value;
+
+  if (eid) {
+    // Edit existing
+    var idx = (p.eintraege||[]).findIndex(function(x){return x.id===eid;});
+    if (idx !== -1) {
+      var oldFotos = p.eintraege[idx].fotos || [];
+      p.eintraege[idx] = {
+        id: eid,
+        datum: $('te-dat').value,
+        text: text,
+        status: $('te-st').value,
+        wasser: wasserVal,
+        fotos: fotos.length ? fotos : oldFotos
+      };
+      // Update plant status from latest entry
+      if (idx === 0) p.status = p.eintraege[0].status;
+    }
+  } else {
+    // New entry
+    var e = {id:uid(), datum:$('te-dat').value, text, status:$('te-st').value, wasser:wasserVal, fotos};
+    p.eintraege = p.eintraege || [];
+    p.eintraege.unshift(e);
+    p.status = e.status;
+  }
+  sched(); cm('modal-eintrag'); openDetail(pid);
+  toast(eid ? '✏️ Eintrag aktualisiert' : '📝 Eintrag gespeichert');
+}
+
+function deleteEintrag() {
+  var pid = $('te-pid').value;
+  var eid = $('te-eid').value;
+  if (!eid) return;
+  if (!confirm('Diesen Eintrag wirklich löschen?')) return;
+  var p = db.pflanzen.find(function(x){return x.id===pid;}); if (!p) return;
+  p.eintraege = (p.eintraege||[]).filter(function(x){return x.id!==eid;});
+  // Update status from new latest entry
+  if (p.eintraege.length) p.status = p.eintraege[0].status;
+  sched(); cm('modal-eintrag'); openDetail(pid); toast('🗑️ Eintrag gelöscht');
+}
+
+// ===== BEET PLAN =====
+let activeBeet = null;
+function renderBeetplan() {
+  refreshBeetSelects();
+  const sel=$('beet-selector');
+  if(!db.beete.length){
+    $('beet-canvas').innerHTML='';
+    sel.innerHTML='';
+    $('beet-legende').innerHTML=`<div class="empty"><div class="ei">🌾</div><p>Noch keine Beete.<br>Lege dein erstes Beet an!</p></div>`;
+    return;
+  }
+  if(!activeBeet||!db.beete.find(b=>b.id===activeBeet)) activeBeet=db.beete[0].id;
+  sel.innerHTML=db.beete.map(b=>`<button class="beet-selector-btn ${b.id===activeBeet?'active':''}" onclick="selectBeet('${b.id}')">${b.name}</button>`).join('');
+  renderBeetCanvas();
+  renderBeetLegende();
+}
+function selectBeet(id){activeBeet=id;renderBeetplan();}
+function renderBeetCanvas() {
+  var beet=db.beete.find(function(b){return b.id===activeBeet;});if(!beet)return;
+  var pflanzen=db.pflanzen.filter(function(p){
+    var ids=p.beete&&p.beete.length?p.beete:(p.beet?[p.beet]:[]);
+    return ids.includes(activeBeet);
+  });
+  var cols=3; var rows=Math.max(3,Math.ceil(pflanzen.length/cols)+1);
+  $('beet-canvas').style.gridTemplateColumns='repeat('+cols+',1fr)';
+  var cells='';
+  if(beet.foto){cells+='<div style="grid-column:1/-1;border-radius:var(--r-sm);overflow:hidden;height:90px;margin-bottom:2px"><img src="'+beet.foto+'" style="width:100%;height:90px;object-fit:cover"></div>';}
+  for(var i=0;i<rows*cols;i++){
+    var p=pflanzen[i];
+    if(p){
+      var foto=p.eintraege&&p.eintraege.length&&p.eintraege[0].fotos&&p.eintraege[0].fotos.length?p.eintraege[0].fotos[0]:null;
+      var cellImg=foto?'<img src="'+foto+'" style="width:40px;height:40px;object-fit:cover;border-radius:6px">':'<div class="beet-cell-emoji">🌱</div>';
+      cells+='<div class="beet-cell occupied" onclick="openDetail(this.dataset.pid)" data-pid="'+p.id+'">'+cellImg+'<div class="beet-cell-name">'+p.name+'</div></div>';
+    } else {
+      cells+='<div class="beet-cell empty" onclick="openPflanzAndBeet(this.dataset.bid)" data-bid="'+activeBeet+'"><div style="font-size:1.2rem;opacity:.4">＋</div><div style="font-size:.7rem;color:var(--text3);opacity:.6">leer</div></div>';
+    }
+  }
+  $('beet-canvas').innerHTML=cells;
+}
+function openPflanzAndBeet(beetId) {
+  // Show picker: choose existing plant or create new
+  $('bpick-beet-id').value = beetId;
+  $('bpick-search').value = '';
+  renderBeetPflanzPicker();
+  $('modal-beet-pflanz').classList.add('open');
+}
+
+var bpickSelected = [];
+
+function renderBeetPflanzPicker() {
+  var el = $('bpick-list'); if(!el) return;
+  var beetId = $('bpick-beet-id').value;
+  var q = ($('bpick-search').value||'').toLowerCase();
+  var list = db.pflanzen.filter(function(p){
+    return !q || p.name.toLowerCase().includes(q) || (p.art||'').toLowerCase().includes(q);
+  });
+  if(!list.length){
+    el.innerHTML='<div style="padding:16px;font-size:.85rem;color:var(--text3);text-align:center;font-style:italic">Keine Pflanzen gefunden</div>';
+    return;
+  }
+  el.innerHTML = list.map(function(p){
+    var beetIds=p.beete&&p.beete.length?p.beete:(p.beet?[p.beet]:[]);
+    var alreadyIn = beetIds.includes(beetId);
+    var isSel = bpickSelected.includes(p.id);
+    var foto=p.eintraege&&p.eintraege.length&&p.eintraege[0].fotos&&p.eintraege[0].fotos.length?p.eintraege[0].fotos[0]:null;
+    var fotoHtml=foto?'<img src="'+foto+'">':'🌿';
+    var beetNames=beetIds.map(function(id){var b=db.beete.find(function(b){return b.id===id;});return b?b.name:'';}).filter(Boolean);
+    return '<div class="beet-picker-item'+(isSel?' selected':'')+'" onclick="toggleBpick(\''+p.id+'\')"'+(alreadyIn?' style="opacity:.5"':'')+'>'
+      +'<div class="bpi-photo">'+fotoHtml+'</div>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-weight:700;font-size:.9rem">'+p.name+'</div>'
+      +'<div style="font-size:.72rem;color:var(--text3)">'+(p.kategorie||'')+(beetNames.length?' · '+beetNames.join(', '):'')+(alreadyIn?' · <strong style=\"color:var(--sage)\">schon hier</strong>':'')+'</div>'
+      +'</div>'
+      +'<div class="bpi-check'+(isSel?' on':'')+'">'+(isSel?'✓':'')+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function newPflanzFromBeet() {
+  var beetId = $('bpick-beet-id').value;
+  cm('modal-beet-pflanz');
+  bpickSelected=[];
+  selectedBeete = beetId ? [beetId] : [];
+  openPflanzModal();
+}
+
+function toggleBpick(pid) {
+  if(idx===-1) bpickSelected.push(pid); else bpickSelected.splice(idx,1);
+  renderBeetPflanzPicker();
+}
+
+function confirmBeetPflanzPick() {
+  var beetId = $('bpick-beet-id').value;
+  if(!bpickSelected.length){toast('⚠️ Keine Pflanze ausgewählt');return;}
+  var count=0;
+  bpickSelected.forEach(function(pid){
+    var p=db.pflanzen.find(function(x){return x.id===pid;});
+    if(!p) return;
+    var beete=p.beete&&p.beete.length?p.beete.slice():(p.beet?[p.beet]:[]);
+    if(!beete.includes(beetId)){beete.push(beetId);}
+    p.beete=beete; p.beet=beete[0];
+    count++;
+  });
+  bpickSelected=[];
+  sched();
+  cm('modal-beet-pflanz');
+  renderBeetplan();
+  toast('🌱 '+count+' Pflanze'+(count!==1?'n':'')+' dem Beet zugeordnet');
+}
+function renderBeetLegende() {
+  var beet=db.beete.find(function(b){return b.id===activeBeet;});if(!beet)return;
+  var pflanzen=db.pflanzen.filter(function(p){
+    var ids=p.beete&&p.beete.length?p.beete:(p.beet?[p.beet]:[]);
+    return ids.includes(activeBeet);
+  });
+  $('beet-legende').innerHTML='<div class="card card-pad">'
+    +'<div style="font-family:Fraunces,serif;font-size:1rem;color:var(--green);margin-bottom:4px">'+beet.name+'</div>'
+    +'<div style="font-size:.8rem;color:var(--text3);margin-bottom:10px">'+beet.typ+(beetGroesseLabel(beet)?' · '+beetGroesseLabel(beet):'')+(beet.beschreibung?' · '+beet.beschreibung:'')+'</div>'
+    +'<div style="font-size:.78rem;color:var(--text3)">'+pflanzen.length+' Pflanze'+(pflanzen.length!==1?'n':'')+' in diesem Beet</div>'
+    +'<button class="bs" style="margin-top:12px" onclick="openBeetModal(this.dataset.id)" data-id="'+beet.id+'">✏️ Beet bearbeiten</button>'
+    +'</div>';
+}
+
+// ===== KALENDER =====
+function calNav(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++;}if(calMonth<0){calMonth=11;calYear--;}renderKalender();}
+function renderKalender() {
+  $('cal-month-label').textContent=`${MONATE[calMonth]} ${calYear}`;
+  const firstDay=new Date(calYear,calMonth,1);
+  let startDow=firstDay.getDay()-1; if(startDow<0)startDow=6;
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const daysInPrev=new Date(calYear,calMonth,0).getDate();
+  const todayStr=today();
+  const taskDays=new Set(db.aufgaben.filter(a=>a.datum).map(a=>a.datum));
+  let html=WOCHENTAGE.map(d=>`<div class="cal-day-head">${d}</div>`).join('');
+  for(let i=0;i<startDow;i++){const day=daysInPrev-startDow+1+i;const d=`${calYear}-${String(calMonth).padStart(2,'0')}-${String(day).padStart(2,'0')}`;html+=`<div class="cal-day other-month ${taskDays.has(d)?'has-task':''}">${day}</div>`;}
+  for(let d=1;d<=daysInMonth;d++){const dstr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const isToday=dstr===todayStr;const isSel=dstr===calSelected;const hasTask=taskDays.has(dstr);html+=`<div class="cal-day ${isToday?'today':''} ${isSel&&!isToday?'selected':''} ${hasTask?'has-task':''}" onclick="selectDay('${dstr}')">${d}</div>`;}
+  const remaining=(7-((startDow+daysInMonth)%7))%7;
+  for(let i=1;i<=remaining;i++){const d=`${calYear}-${String(calMonth+2).padStart(2,'0')}-${String(i).padStart(2,'0')}`;html+=`<div class="cal-day other-month ${taskDays.has(d)?'has-task':''}">${i}</div>`;}
+  $('cal-grid').innerHTML=html;
+  renderAufgaben();
+}
+function selectDay(d){calSelected=calSelected===d?null:d;renderKalender();}
+function selAufgabeTyp(el) {
+  document.querySelectorAll('#modal-aufgabe .chip').forEach(function(c){c.classList.remove('sel-beet');});
+  el.classList.add('sel-beet');
+  var t = el.dataset.at;
+  $('atyp').value = t;
+  $('an-label').textContent = t==='notiz' ? 'Notiz / Ereignis *' : 'Aufgabe *';
+  $('an').placeholder = t==='notiz' ? 'z.B. Erdbeeren gedüngt, erste Blüte gesehen…' : 'z.B. Tomaten düngen, Salat ernten…';
+  $('aufgabe-mtitle').textContent = t==='notiz' ? 'Neue Notiz / Ereignis' : 'Neue Aufgabe';
+  $('aprio-wrap').style.display = t==='notiz' ? 'none' : 'block';
+  $('aintervall-wrap').style.display = t==='notiz' ? 'none' : 'block';
+}
+
+function renderAufgaben() {
+  var el=$('aufgabe-list');
+  var list=calSelected?db.aufgaben.filter(function(a){return a.datum===calSelected;}):db.aufgaben;
+  list=[...list].sort(function(a,b){if(a.done!==b.done)return a.done?1:-1;return(a.datum||'').localeCompare(b.datum||'');});
+  $('cal-selected-label').textContent=calSelected?'Einträge am '+fdate(calSelected):'Alle Aufgaben & Notizen';
+  if(!list.length){
+    el.innerHTML='<div class="empty" style="padding:24px 0"><div class="ei" style="font-size:2rem">'+(calSelected?'📅':'✅')+'</div><p>'+(calSelected?'Keine Einträge für diesen Tag.':'Keine Aufgaben vorhanden.')+'</p></div>';
+    return;
+  }
+  el.innerHTML=list.map(function(a){
+    var isNotiz=a.typ==='notiz';
+    var checkHtml=isNotiz
+      ? '<div style="width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;margin-top:1px">📝</div>'
+      : '<div class="aufgabe-check '+(a.done?'done':'')+'" onclick="toggleAufgabe(\''+a.id+'\')">'+(a.done?'✓':'')+'</div>';
+    var intervallHtml=a.intervall?'<div class="aufgabe-intervall">🔁 alle '+a.intervall+' '+a.intervallEinheit+'</div>':'';
+    var delBtn=a.done||isNotiz
+      ? '<button class="aufgabe-del" onclick="deleteAufgabe(\''+a.id+'\')" title="Löschen">🗑️</button>'
+      : '<button class="aufgabe-del" onclick="openAufgabeModal(\''+a.id+'\')" title="Bearbeiten">✏️</button>';
+    return '<div class="aufgabe-item'+(isNotiz?' typ-notiz':'')+'">'
+      +checkHtml
+      +'<div class="aufgabe-text" style="flex:1">'
+      +'<div class="aufgabe-name '+(a.done&&!isNotiz?'done':'')+'">'+a.name+'</div>'
+      +'<div class="aufgabe-meta">'+(a.datum?fdate(a.datum):'')+(a.beet?' · '+beetName(a.beet):'')+(a.notiz?' · '+a.notiz:'')+'</div>'
+      +intervallHtml
+      +'</div>'
+      +(isNotiz?'':('<div class="priority-dot pd-'+(a.prioritaet||'mittel')+'"></div>'))
+      +delBtn
+      +'</div>';
+  }).join('');
+}
+
+function toggleAufgabe(id) {
+  var a=db.aufgaben.find(function(x){return x.id===id;});
+  if(!a) return;
+  a.done=!a.done;
+  // If done and has interval → create next occurrence
+  if(a.done && a.intervall && parseInt(a.intervall)>0) {
+    var baseDate = a.datum ? new Date(a.datum+'T00:00:00') : new Date();
+    var n = parseInt(a.intervall);
+    var einheit = a.intervallEinheit||'tage';
+    if(einheit==='tage') baseDate.setDate(baseDate.getDate()+n);
+    else if(einheit==='wochen') baseDate.setDate(baseDate.getDate()+(n*7));
+    else if(einheit==='monate') baseDate.setMonth(baseDate.getMonth()+n);
+    var nextDateStr = baseDate.toISOString().slice(0,10);
+    var next = {
+      id:uid(), name:a.name, datum:nextDateStr, beet:a.beet,
+      prioritaet:a.prioritaet, notiz:a.notiz,
+      intervall:a.intervall, intervallEinheit:a.intervallEinheit,
+      done:false, typ:a.typ||'aufgabe'
+    };
+    db.aufgaben.push(next);
+    toast('🔁 Neue Aufgabe erstellt: '+fdate(nextDateStr));
+  }
+  sched(); renderAufgaben(); renderDashboard();
+}
+
+function deleteAufgabe(id) {
+  if(!confirm('Eintrag wirklich löschen?')) return;
+  db.aufgaben = db.aufgaben.filter(function(x){return x.id!==id;});
+  sched(); renderAufgaben(); renderDashboard(); toast('🗑️ Gelöscht');
+}
+
+function openAufgabeModal(id) {
+  refreshBeetSelects();
+  $('aeid').value=id||'';
+  // Reset typ
+  var typ='aufgabe';
+  if(id){
+    var a=db.aufgaben.find(function(x){return x.id===id;});
+    $('an').value=a.name; $('adat').value=a.datum||''; $('abeet').value=a.beet||'';
+    $('aprio').value=a.prioritaet||'mittel'; $('anotiz').value=a.notiz||'';
+    $('aintervall').value=a.intervall||'';
+    $('aintervall-einheit').value=a.intervallEinheit||'tage';
+    typ=a.typ||'aufgabe';
+  } else {
+    $('an').value=''; $('adat').value=calSelected||today();
+    $('abeet').value=''; $('aprio').value='mittel'; $('anotiz').value='';
+    $('aintervall').value=''; $('aintervall-einheit').value='tage';
+  }
+  // Set type UI
+  document.querySelectorAll('#modal-aufgabe .chip').forEach(function(c){
+    c.classList.toggle('sel-beet', c.dataset.at===typ);
+  });
+  $('atyp').value=typ;
+  $('aufgabe-mtitle').textContent = typ==='notiz'?'Notiz / Ereignis':'Neue Aufgabe';
+  $('an-label').textContent = typ==='notiz'?'Notiz / Ereignis *':'Aufgabe *';
+  $('aprio-wrap').style.display = typ==='notiz'?'none':'block';
+  $('aintervall-wrap').style.display = typ==='notiz'?'none':'block';
+  $('modal-aufgabe').classList.add('open');
+}
+
+function saveAufgabe(){
+  var name=$('an').value.trim(); if(!name){toast('⚠️ Bitte Text eingeben');return;}
+  var id=$('aeid').value||uid(); var isNew=!$('aeid').value;
+  var intervall=$('aintervall').value.trim();
+  var obj={
+    id, name, datum:$('adat').value, beet:$('abeet').value,
+    prioritaet:$('aprio').value, notiz:$('anotiz').value,
+    typ:$('atyp').value,
+    intervall:intervall&&parseInt(intervall)>0?intervall:'',
+    intervallEinheit:$('aintervall-einheit').value,
+    done:isNew?false:(db.aufgaben.find(function(x){return x.id===id;})||{}).done||false
+  };
+  if(!isNew){var i=db.aufgaben.findIndex(function(x){return x.id===id;});db.aufgaben[i]=obj;}
+  else db.aufgaben.push(obj);
+  sched(); cm('modal-aufgabe'); renderKalender(); renderDashboard();
+  toast(obj.typ==='notiz'?'📝 Notiz gespeichert':'📅 Aufgabe gespeichert');
+}
+
+// ===== ERNTE =====
+function openErnteModal(id){
+  refreshBeetSelects();$('eeid').value=id||'';
+  if(id){const e=db.ernten.find(x=>x.id===id);$('en').value=e.name;$('em').value=e.menge||'';$('edat').value=e.datum||'';$('ebeet').value=e.beet||'';$('enotiz').value=e.notiz||'';}
+  else{$('en').value='';$('em').value='';$('edat').value=today();$('ebeet').value='';$('enotiz').value='';}
+  $('modal-ernte').classList.add('open');
+}
+function saveErnte(){
+  const name=$('en').value.trim();if(!name){toast('⚠️ Bitte Name eingeben');return;}
+  const id=$('eeid').value||uid();const isNew=!$('eeid').value;
+  const obj={id,name,menge:$('em').value,datum:$('edat').value,beet:$('ebeet').value,notiz:$('enotiz').value};
+  if(!isNew){const i=db.ernten.findIndex(x=>x.id===id);db.ernten[i]=obj;}else db.ernten.push(obj);
+  sched();cm('modal-ernte');renderErnte();renderDashboard();toast('🧺 Ernte gespeichert');
+}
+function renderErnte(){
+  var el=$('ernte-list');
+  var list=[...db.ernten].sort(function(a,b){return(b.datum||'').localeCompare(a.datum||'');});
+  if(!list.length){el.innerHTML='<div class="empty"><div class="ei">🧺</div><p>Noch keine Ernten eingetragen.</p></div>';return;}
+  el.innerHTML=list.map(function(e){
+    var mengeHtml=e.menge?'<div class="ernte-menge">'+e.menge+'</div>':'';
+    var metaHtml=(e.datum?fdate(e.datum):'')+(e.beet?' · '+beetName(e.beet):'')+(e.notiz?' · '+e.notiz:'');
+    return '<div class="ernte-card" onclick="openErnteModal(this.dataset.id)" data-id="'+e.id+'">';
+      +'<div class="ernte-icon">🌱</div>'
+      +'<div style="flex:1">'
+      +'<div class="ernte-name">'+e.name+'</div>'
+      +'<div class="ernte-meta">'+metaHtml+'</div>'
+      +'</div>'+mengeHtml+'</div>';
+  }).join('');
+}
+
+// ===== NOTIZEN =====
+function openNotizModal(){$('notiz-titel').value='';$('notiz-text').value='';$('modal-notiz').classList.add('open');}
+function saveNotiz(){
+  const text=$('notiz-text').value.trim();if(!text){toast('⚠️ Bitte Text eingeben');return;}
+  db.notizen=db.notizen||[];
+  db.notizen.unshift({id:uid(),titel:$('notiz-titel').value.trim()||'Notiz',text,datum:today()});
+  sched();cm('modal-notiz');toast('📝 Notiz gespeichert');
+}
+
+// ===== WISSEN =====
+const WISSEN_DATA = [
+  {id:'mischkultur',icon:'🤝',name:'Mischkultur',desc:'Welche Pflanzen sich gut verstehen',info:[
+    ['Tomaten + Basilikum','Basilikum hält Blattläuse fern und soll den Tomatengeschmack verbessern.'],
+    ['Tomaten + Tagetes','Tagetes schützt gegen Wurzelnematoden und Weiße Fliege.'],
+    ['Möhren + Zwiebeln','Gegenseitige Abwehr von Möhrenfliege und Zwiebelfliege.'],
+    ['Kohl + Kräuter','Salbei, Dill und Kamille halten Kohlweißlinge fern.'],
+    ['Paprika + Basilikum','Ähnlich wie Tomaten — Basilikum stärkt die Paprika.'],
+    ['Gurken + Kapuzinerkresse','Kapuzinerkresse lockt Blattläuse ab (Opferpflanze).'],
+    ['Was NICHT zusammen','Fenchel ist ein Einzelgänger — Abstand zu allem anderen halten!'],
+  ]},
+  {id:'giessen',icon:'💧',name:'Richtig gießen',desc:'Wann, wie viel und wie gießen',info:[
+    ['Morgens gießen','Am besten früh morgens — Blätter trocknen tagsüber ab, weniger Pilzkrankheiten.'],
+    ['An die Wurzel','Immer am Boden gießen, nicht über die Blätter (außer bei Hitze).'],
+    ['Tomaten','Gleichmäßig gießen — Trockenstress führt zu Blütenendenfäule.'],
+    ['Kräuter','Weniger ist mehr. Die meisten Kräuter mögen es eher trocken.'],
+    ['Mulchen hilft','Mulch hält Feuchtigkeit im Boden und reduziert Gießbedarf deutlich.'],
+    ['Fingerprobe','Finger 2 cm in die Erde — fühlt sich trocken an → gießen.'],
+  ]},
+  {id:'boden',icon:'🪱',name:'Boden & Kompost',desc:'Die Grundlage eines guten Gartens',info:[
+    ['Kompost einarbeiten','Im Frühjahr Kompost einarbeiten — das ist der beste natürliche Dünger.'],
+    ['Humus aufbauen','Mulch, Gründüngung und Kompost bauen langfristig Humus auf.'],
+    ['pH-Wert','Die meisten Gemüse mögen pH 6–7. Kohl und Salat lieben es etwas alkalischer.'],
+    ['Bodenlockerung','Im Frühjahr einmal lockern — aber nicht zu tief (Bodenlebewesen schonen).'],
+    ['Regenwürmer','Regenwürmer sind Gold wert! Kompost und Mulch fördern sie.'],
+    ['Gründüngung','Phacelia, Senf, Klee — im Herbst säen, im Frühjahr einarbeiten.'],
+  ]},
+  {id:'schaedlinge',icon:'🐛',name:'Schädlinge & Schutz',desc:'Natürlicher Pflanzenschutz',info:[
+    ['Blattläuse','Brennnesseljauche, Knoblauchsud oder einfach mit Wasser abspritzen.'],
+    ['Schnecken','Kaffeesatz, Schafwolle oder Schneckenzaun. Abends kontrollieren.'],
+    ['Weißkohlfliege','Feinmaschiges Vlies über Kohlpflanzen schützt zuverlässig.'],
+    ['Mehltau','Mehr Abstand zwischen Pflanzen, weniger über Blätter gießen. Magermilch hilft.'],
+    ['Nützlinge fördern','Insektenhotels, Wildblumen und Totholz locken Nützlinge an.'],
+    ['Vorbeugung','Gesunder Boden + richtige Pflanzabstände = die beste Vorbeugung.'],
+  ]},
+  {id:'saatkalender',icon:'🗓️',name:'Saatkalender',desc:'Wann was säen und pflanzen',info:[
+    ['Februar–März','Vorziehen innen: Tomaten, Paprika, Chili, Sellerie, Porree.'],
+    ['März–April','Vorziehen: Gurken, Zucchini, Kürbis, Kohlrabi.'],
+    ['April','Direkt ins Beet: Möhren, Radieschen, Spinat, Salat.'],
+    ['Mai (nach Eisheiligen)','Auspflanzen: Tomaten, Paprika, Gurken, Zucchini.'],
+    ['Juni–Juli','Nachsaat: Salat, Radieschen, Buschbohnen für Herbsternte.'],
+    ['August–September','Wintergemüse: Feldsalat, Spinat, Winterportulak.'],
+  ]},
+  {id:'andalusien',icon:'☀️',name:'Gärtnern in Andalusien',desc:'Tipps für heißes Klima',info:[
+    ['Hitze & Sonne','Mulchen ist Pflicht. Im Hochsommer täglich gießen, früh morgens.'],
+    ['Schatten nutzen','Paprika, Salat und Kräuter schätzen Halbschatten im Hochsommer.'],
+    ['Wintergemüse','Von Oktober bis April ideal: Tomaten, Paprika, Erbsen, Salat.'],
+    ['Wassereffizienz','Tröpfchenbewässerung spart bis zu 70% Wasser — lohnt sich sehr.'],
+    ['Chili & Paprika','Lieben die Hitze — im andalusischen Sommer besonders produktiv!'],
+    ['Olivenbäume','Kaum Pflege nötig. Einmal im Jahr düngen, trockene Äste entfernen.'],
+  ]},
+];
+
+function initWissen(){} // lazy init
+function renderWissen(){
+  // User entries first
+  var userEl=$('wissen-user-list');
+  if(userEl){
+    var eigen=db.wissenEigen||[];
+    if(!eigen.length){
+      userEl.innerHTML='<div style="font-size:.85rem;color:var(--text3);font-style:italic;padding:8px 0 14px">Noch keine eigenen Einträge.</div>';
+    } else {
+      userEl.innerHTML=eigen.map(function(w){
+        return '<div class="wissen-user-card" onclick="openWissenEigen(this.dataset.id)" data-id="'+w.id+'">'
+          +'<div class="wissen-user-title">'+(w.kategorie?'['+w.kategorie+'] ':'')+w.titel+'</div>'
+          +'<div class="wissen-user-preview">'+w.inhalt+'</div>'
+          +'<div style="font-size:.72rem;color:var(--text3);margin-top:6px">'+fdate(w.datum)+'</div>'
+          +'</div>';
+      }).join('');
+    }
+  }
+  // Library
+  var gridEl=$('wissen-grid');
+  if(gridEl){
+    gridEl.innerHTML=WISSEN_DATA.map(function(w){
+      return '<div class="wissen-card" onclick="openWissen(this.dataset.id)" data-id="'+w.id+'">'
+        +'<div class="wissen-icon">'+w.icon+'</div>'
+        +'<div class="wissen-name">'+w.name+'</div>'
+        +'<div class="wissen-desc">'+w.desc+'</div>'
+        +'</div>';
+    }).join('');
+  }
+}
+
+function openWissenNeuModal(id){
+  $('wneid').value=id||'';
+  if(id){
+    var w=(db.wissenEigen||[]).find(function(x){return x.id===id;});
+    if(w){$('wissen-neu-mtitle').textContent='Eintrag bearbeiten';$('wnt').value=w.titel;$('wni').value=w.inhalt;$('wnk').value=w.kategorie||'';}
+  } else {
+    $('wissen-neu-mtitle').textContent='Eigene Erkenntnis';
+    $('wnt').value='';$('wni').value='';$('wnk').value='';
+  }
+  $('modal-wissen-neu').classList.add('open');
+}
+function saveWissenEintrag(){
+  var titel=$('wnt').value.trim(); var inhalt=$('wni').value.trim();
+  if(!titel||!inhalt){toast('⚠️ Bitte Titel und Inhalt eingeben');return;}
+  if(!db.wissenEigen)db.wissenEigen=[];
+  var id=$('wneid').value||uid(); var isNew=!$('wneid').value;
+  var obj={id,titel,inhalt,kategorie:$('wnk').value,datum:today()};
+  if(!isNew){var i=db.wissenEigen.findIndex(function(x){return x.id===id;});db.wissenEigen[i]=obj;}
+  else db.wissenEigen.unshift(obj);
+  sched();cm('modal-wissen-neu');renderWissen();toast('📚 Eintrag gespeichert');
+}
+function openWissenEigen(id){
+  var w=(db.wissenEigen||[]).find(function(x){return x.id===id;});if(!w)return;
+  $('wissen-detail').innerHTML='<div class="mhandle"></div>'
+    +'<div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px">'+(w.kategorie||'Eigene Notiz')+'</div>'
+    +'<div class="mtitle">'+w.titel+'</div>'
+    +'<div style="font-size:.9rem;color:var(--text2);line-height:1.8;white-space:pre-wrap;margin-bottom:16px">'+w.inhalt+'</div>'
+    +'<div style="font-size:.78rem;color:var(--text3);margin-bottom:16px">📅 '+fdate(w.datum)+'</div>'
+    +'<button class="bp" style="margin-bottom:8px" onclick="cm(\'modal-wissen\');openWissenNeuModal(\''+id+'\')">✏️ Bearbeiten</button>'
+    +'<button class="bs" onclick="closeWissenModal()">Schließen</button>'
+    +'<button class="bd" onclick="delWissenEigen(\''+id+'\')">🗑️ Löschen</button>';
+  $('modal-wissen').classList.add('open');
+}
+function delWissenEigen(id){
+  if(!confirm('Eintrag löschen?'))return;
+  db.wissenEigen=(db.wissenEigen||[]).filter(function(x){return x.id!==id;});
+  sched();cm('modal-wissen');renderWissen();toast('🗑️ Gelöscht');
+}
+function closeWissenModal(){cm('modal-wissen');}
+function openWissen(id){
+  if(typeof id==='object')id=id.dataset?id.dataset.id:id;
+  var w=WISSEN_DATA.find(function(x){return x.id===id;});if(!w)return;
+  var infoHtml=w.info.map(function(kv){
+    return '<div class="wissen-item"><div class="wissen-item-key">'+kv[0]+'</div><div class="wissen-item-val">'+kv[1]+'</div></div>';
+  }).join('');
+  $('wissen-detail').innerHTML='<div class="mhandle"></div>'
+    +'<div style="font-size:2.5rem;margin-bottom:8px">'+w.icon+'</div>'
+    +'<div class="mtitle">'+w.name+'</div>'
+    +'<div class="wissen-detail-card">'+infoHtml+'</div>'
+    +'<button class="bs" onclick="closeWissenModal()">Schließen</button>';
+  $('modal-wissen').classList.add('open');
+}
+
+// ===== SAMENBANK =====
+function openSamenModal(id){
+  $('seid').value=id||'';
+  if(id){
+    var s=(db.samen||[]).find(function(x){return x.id===id;});
+    if(s){
+      $('samen-mtitle').textContent=s.name+' bearbeiten';
+      $('sn').value=s.name;$('sm').value=s.menge||'';$('sj').value=s.jahr||'';
+      $('sh').value=s.herkunft||'';$('sno').value=s.notiz||'';$('sl').value=s.lager||'';
+      $('skeimzeit').value=s.keimzeit||'';$('skeimtemp').value=s.keimtemp||'';
+      $('skeimbeding').value=s.keimbeding||'';$('ssaattiefe').value=s.saattiefe||'';
+      $('slagerdauer').value=s.lagerdauer||'';
+    }
+  } else {
+    $('samen-mtitle').textContent='Samen eintragen';
+    ['sn','sm','sh','sno','sl','skeimzeit','skeimtemp','skeimbeding','ssaattiefe','slagerdauer'].forEach(function(i){$(i).value='';});
+    $('sj').value=new Date().getFullYear();
+  }
+  $('modal-samen').classList.add('open');
+}
+function saveSamen(){
+  var name=$('sn').value.trim();if(!name){toast('⚠️ Bitte Name eingeben');return;}
+  if(!db.samen)db.samen=[];
+  var id=$('seid').value||uid(); var isNew=!$('seid').value;
+  var obj={id,name,
+    menge:$('sm').value,jahr:$('sj').value,herkunft:$('sh').value,
+    notiz:$('sno').value,lager:$('sl').value,
+    keimzeit:$('skeimzeit').value,keimtemp:$('skeimtemp').value,
+    keimbeding:$('skeimbeding').value,saattiefe:$('ssaattiefe').value,
+    lagerdauer:$('slagerdauer').value
+  };
+  if(!isNew){var i=db.samen.findIndex(function(x){return x.id===id;});db.samen[i]=obj;}else db.samen.unshift(obj);
+  sched();cm('modal-samen');renderSamen();toast('🫙 Samen gespeichert');
+}
+function renderSamen(){
+  var el=$('samen-list');if(!el)return;
+  var q=(($('samen-search')||{}).value||'').toLowerCase();
+  var list=(db.samen||[]).filter(function(s){return !q||s.name.toLowerCase().includes(q);});
+  if(!list.length){
+    el.innerHTML='<div class="empty"><div class="ei">🫙</div><p>'+(db.samen&&db.samen.length?'Kein Treffer':'Samenbank leer.<br>Trag deine ersten Samen ein!')+'</p></div>';
+    return;
+  }
+  el.innerHTML=list.map(function(s){
+    var keimInfo='';
+    if(s.keimzeit||s.keimtemp){keimInfo='<div style="font-size:.75rem;color:var(--text3);margin-top:3px">🌱 '+(s.keimzeit?s.keimzeit:'')+( s.keimtemp?' · '+s.keimtemp:'')+'</div>';}
+    return '<div class="samen-card" onclick="openSamenModal(this.dataset.id)" data-id="'+s.id+'">'
+      +'<div class="samen-icon">🫙</div>'
+      +'<div style="flex:1">'
+      +'<div class="samen-name">'+s.name+'</div>'
+      +'<div class="samen-meta">'+(s.jahr?'Jahrgang '+s.jahr:'')+(s.herkunft?' · '+s.herkunft:'')+(s.lager?' · '+s.lager:'')+'</div>'
+      +keimInfo
+      +(s.notiz?'<div style="font-size:.75rem;color:var(--text3);margin-top:2px;font-style:italic">'+s.notiz+'</div>':'')
+      +'</div>'
+      +(s.menge?'<div class="samen-menge">'+s.menge+'</div>':'')
+      +'</div>';
+  }).join('');
+}
+
+// ===== EINSTELLUNGEN =====
+function renderEinstellungen(){
+  var te=db.pflanzen.reduce(function(n,p){return n+(p.eintraege||[]).length;},0);
+  $('settings-stats').innerHTML=
+    '<div class="stat-tile"><div class="stat-icon">🌿</div><div><div class="stat-num">'+db.pflanzen.length+'</div><div class="stat-lbl">Pflanzen</div></div></div>'
+    +'<div class="stat-tile"><div class="stat-icon">📝</div><div><div class="stat-num">'+te+'</div><div class="stat-lbl">Tagebuch-Einträge</div></div></div>'
+    +'<div class="stat-tile"><div class="stat-icon">🫙</div><div><div class="stat-num">'+((db.samen||[]).length)+'</div><div class="stat-lbl">Samen-Sorten</div></div></div>'
+    +'<div class="stat-tile"><div class="stat-icon">🧺</div><div><div class="stat-num">'+db.ernten.length+'</div><div class="stat-lbl">Ernte-Einträge</div></div></div>';
+}
+
+// ===== BACKUP =====
+function exportData(){
+  var blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='gartenbuch_backup_'+today()+'.json';a.click();toast('📥 Backup wird heruntergeladen');
+}
+function importData(input){
+  var file=input.files[0];if(!file)return;
+  var r=new FileReader();r.onload=function(e){
+    try{
+      var data=JSON.parse(e.target.result);
+      if(!data.pflanzen||!data.beete){toast('❌ Ungültige Backup-Datei');return;}
+      if(!confirm('Backup laden?\n'+data.pflanzen.length+' Pflanzen, '+data.beete.length+' Beete\n\n⚠️ Aktuelle Daten werden überschrieben!'))return;
+      db=data;
+      ['aufgaben','ernten','notizen','samen','wissenEigen'].forEach(function(k){if(!db[k])db[k]=[];});
+      saveLocal();toast('✅ Backup eingespielt!');renderDashboard();
+    }catch(e){toast('❌ Fehler beim Lesen der Datei');}
+  };r.readAsText(file);input.value='';
+}
+
+// ===== LIGHTBOX =====
+function openLB(src){
+  var lb=document.getElementById('lb');
+  if(!lb){lb=document.createElement('div');lb.id='lb';lb.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:300;display:flex;align-items:center;justify-content:center;cursor:pointer';lb.onclick=function(){lb.remove();};lb.innerHTML='<img style="max-width:95%;max-height:90vh;border-radius:10px">';document.body.appendChild(lb);}
+  lb.querySelector('img').src=src;
+}
+
+// ===== CLOSE MODALS =====
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+// ===== SERVICE WORKER =====
+if('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js')
+      .then(function(reg){ console.log('SW registered'); })
+      .catch(function(err){ console.log('SW error:', err); });
+  });
+}
+</script>
+</body>
+</html>
