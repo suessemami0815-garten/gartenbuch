@@ -372,6 +372,23 @@ img{display:block}
 .bpi-photo img{width:36px;height:36px;object-fit:cover;border-radius:7px}
 .bpi-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;margin-left:auto}
 .bpi-check.on{background:var(--green);border-color:var(--green);color:#fff;font-size:0.75rem}
+/* ===== FOTO GALERIE ===== */
+.foto-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(min-width:480px){.foto-grid{grid-template-columns:repeat(4,1fr)}}
+.foto-item{position:relative;aspect-ratio:1;border-radius:var(--r-sm);overflow:hidden;cursor:pointer;background:var(--green-light)}
+.foto-item img{width:100%;height:100%;object-fit:cover;display:block}
+.foto-item-date{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.45);color:#fff;font-size:0.65rem;padding:3px 5px;font-weight:700}
+.foto-item-del{position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.5);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:0.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.dash-foto-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-top:8px}
+.dash-foto-strip::-webkit-scrollbar{display:none}
+.dash-foto-thumb{width:70px;height:70px;border-radius:var(--r-sm);object-fit:cover;flex-shrink:0;cursor:pointer;border:2px solid var(--border)}
+.upload-foto-area{border:2px dashed var(--border2);border-radius:var(--r);padding:24px;text-align:center;cursor:pointer;position:relative;background:var(--green-light);transition:border-color .2s}
+.upload-foto-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.kal-mini-day{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 8px;margin-bottom:8px}
+.kal-mini-date{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:500;color:var(--green);margin-bottom:6px}
+.kal-mini-entry{font-size:0.82rem;color:var(--text2);padding:3px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.kal-mini-entry:last-child{border-bottom:none}
+
 .samen-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:14px 16px;margin-bottom:10px;cursor:pointer;display:flex;gap:12px;align-items:center;box-shadow:0 1px 6px var(--shadow)}
 .samen-icon{font-size:1.8rem;width:44px;text-align:center;flex-shrink:0}
 .samen-name{font-family:'Fraunces',serif;font-size:1rem;font-weight:500;color:var(--text)}
@@ -421,6 +438,18 @@ img{display:block}
           <div id="pflanz-mini-list"></div>
           <button onclick="showSec('pflanzen')" style="width:100%;background:none;border:none;color:var(--green);font-weight:700;font-family:'Nunito',sans-serif;font-size:0.85rem;cursor:pointer;padding:10px 0 2px;text-align:center">Alle Pflanzen anzeigen →</button>
         </div>
+        <div class="dash-pflanzen-section" style="margin-top:14px">
+          <div class="dash-section-hdr">
+            <div class="dash-section-hdr-title">📸 Garten-Galerie</div>
+            <button class="dash-alle-btn" onclick="showSec('galerie')">Alle →</button>
+          </div>
+          <div class="dash-foto-strip" id="dash-foto-strip">
+            <label style="width:70px;height:70px;border-radius:var(--r-sm);border:2px dashed var(--border2);background:var(--green-light);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;font-size:1.4rem;cursor:pointer;position:relative">
+              📷<span style="font-size:.6rem;color:var(--text3);margin-top:2px">+ Foto</span>
+              <input type="file" accept="image/*" multiple onchange="uploadGalerieFotos(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
+            </label>
+          </div>
+        </div>
       </div>
       <!-- RIGHT COL -->
       <div class="dash-right">
@@ -460,6 +489,18 @@ img{display:block}
     </div>
     <button class="add-fab" style="width:100%;justify-content:center;margin-bottom:14px" onclick="openBeetModal()">+ Neues Beet anlegen</button>
     <div id="beet-legende"></div>
+  </section>
+
+  <!-- GALERIE -->
+  <section id="sec-galerie" class="section">
+    <h1 class="sec-title">Garten-Galerie</h1>
+    <p class="sec-sub">Deine Gartenmomente mit Datum</p>
+    <div class="upload-foto-area" onclick="document.getElementById('galerie-input').click()" style="margin-bottom:16px">
+      <input type="file" id="galerie-input" accept="image/*" multiple onchange="uploadGalerieFotos(this)">
+      <div style="font-size:1.6rem;margin-bottom:6px">📷</div>
+      <div style="font-size:.9rem;color:var(--text3)">Fotos hinzufügen<br><span style="font-size:.78rem">Datum wird automatisch gespeichert</span></div>
+    </div>
+    <div class="foto-grid" id="galerie-grid"></div>
   </section>
 
   <!-- KALENDER -->
@@ -510,8 +551,14 @@ img{display:block}
 
   <!-- EINSTELLUNGEN -->
   <section id="sec-einstellungen" class="section">
-    <h1 class="sec-title">Einstellungen</h1>
-    <p class="sec-sub">Backup & App-Einstellungen</p>
+    <h1 class="sec-title">Mehr</h1>
+    <p class="sec-sub">Weitere Funktionen</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+      <button onclick="showSec('samenbank')" style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;font-family:'Nunito',sans-serif;cursor:pointer;font-size:1.5rem;text-align:center">🫙<div style="font-size:.78rem;font-weight:700;color:var(--text2);margin-top:4px">Samenbank</div></button>
+      <button onclick="showSec('wissen')" style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;font-family:'Nunito',sans-serif;cursor:pointer;font-size:1.5rem;text-align:center">📖<div style="font-size:.78rem;font-weight:700;color:var(--text2);margin-top:4px">Wissen</div></button>
+      <button onclick="showSec('ernte')" style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;font-family:'Nunito',sans-serif;cursor:pointer;font-size:1.5rem;text-align:center">🧺<div style="font-size:.78rem;font-weight:700;color:var(--text2);margin-top:4px">Ernte</div></button>
+    </div>
+    <h2 style="font-family:'Fraunces',serif;font-size:1.1rem;color:var(--green);margin-bottom:8px">📊 Statistik</h2>
     <div class="stat-grid" id="settings-stats"></div>
     <div class="backup-box">
       <div class="backup-box-title">📦 Daten sichern</div>
@@ -535,8 +582,8 @@ img{display:block}
   <button class="nav-item" onclick="showSec('pflanzen',this)" id="nav-pflanzen"><span class="ni">🌿</span>Pflanzen</button>
   <button class="nav-item" onclick="showSec('beetplan',this)" id="nav-beetplan"><span class="ni">🌾</span>Beet-Plan</button>
   <div class="nav-fab" onclick="toggleFab()">＋</div>
-  <button class="nav-item" onclick="showSec('samenbank',this)" id="nav-samenbank"><span class="ni">🫙</span>Samen</button>
-  <button class="nav-item" onclick="showSec('wissen',this)" id="nav-wissen"><span class="ni">📖</span>Wissen</button>
+  <button class="nav-item" onclick="showSec('kalender',this)" id="nav-kalender"><span class="ni">📅</span>Kalender</button>
+  <button class="nav-item" onclick="showSec('galerie',this)" id="nav-galerie"><span class="ni">📸</span>Galerie</button>
   <button class="nav-item" onclick="showSec('einstellungen',this)" id="nav-einstellungen"><span class="ni">⚙️</span>Mehr</button>
 </nav>
 
@@ -941,7 +988,7 @@ window.onload = () => {
     const r=localStorage.getItem(SK);
     if(r){
       db=JSON.parse(r);
-      ['aufgaben','ernten','notizen','samen','wissenEigen'].forEach(k=>{if(!db[k])db[k]=[];});
+      ['aufgaben','ernten','notizen','samen','wissenEigen','galerie'].forEach(k=>{if(!db[k])db[k]=[];});
     }
   } catch(e){}
   const now = new Date(); calYear=now.getFullYear(); calMonth=now.getMonth();
@@ -958,12 +1005,13 @@ function showSec(n, btn) {
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
   $('sec-'+n).classList.add('active');
   if(btn) btn.classList.add('active');
-  else { const nb=$('nav-'+n); if(nb) nb.classList.add('active'); }
+  else { var nb=$('nav-'+n); if(nb) nb.classList.add('active'); }
   activeSec = n;
   if(n==='uebersicht') renderDashboard();
   if(n==='pflanzen') renderPflanzen();
   if(n==='beetplan') renderBeetplan();
   if(n==='kalender') renderKalender();
+  if(n==='galerie') renderGalerie();
   if(n==='ernte') renderErnte();
   if(n==='samenbank') renderSamen();
   if(n==='wissen') renderWissen();
@@ -1016,7 +1064,6 @@ const QUOTES = [
 ];
 function renderDashboard() {
   var offene = db.aufgaben.filter(function(a){return !a.done&&a.typ!=='notiz';}).length;
-  var notizen = db.aufgaben.filter(function(a){return a.typ==='notiz';}).length;
   var saisonErnte = db.ernten.filter(function(e){var d=new Date(e.datum||'');return d.getFullYear()===new Date().getFullYear();}).length;
   var statsEl = $('dash-stats');
   if(statsEl) statsEl.innerHTML=
@@ -1025,30 +1072,47 @@ function renderDashboard() {
     +'<div class="stat-mini" onclick="showSec(\'kalender\')"><div class="stat-mini-icon">📅</div><div><div class="stat-mini-num">'+offene+'</div><div class="stat-mini-lbl">Aufgaben</div></div></div>'
     +'<div class="stat-mini" onclick="showSec(\'ernte\')"><div class="stat-mini-icon">🧺</div><div><div class="stat-mini-num">'+saisonErnte+'</div><div class="stat-mini-lbl">Ernten</div></div></div>';
 
-  var upcoming = db.aufgaben.filter(function(a){return !a.done&&a.datum;}).sort(function(a,b){return a.datum.localeCompare(b.datum);}).slice(0,4);
+  // Termine: only real Aufgaben, not Notizen
+  var upcoming = db.aufgaben.filter(function(a){return !a.done&&a.datum&&a.typ!=='notiz';}).sort(function(a,b){return a.datum.localeCompare(b.datum);}).slice(0,3);
+  // Recent Notizen
+  var recentNotizen = db.aufgaben.filter(function(a){return a.typ==='notiz';}).sort(function(a,b){return (b.datum||'').localeCompare(a.datum||'');}).slice(0,2);
+
   var todayStr = today();
   var termineEl = $('dash-termine');
   if(!termineEl) return;
-  if(!upcoming.length) { termineEl.innerHTML='<div style="font-size:.85rem;color:var(--text3);padding:8px 0;font-style:italic">Keine offenen Aufgaben 🎉</div>'; }
-  else {
-    var html='';
+  var html='';
+
+  if(upcoming.length) {
     upcoming.forEach(function(a){
       var d=new Date(a.datum+'T00:00:00');
       var diff=Math.round((new Date(a.datum)-new Date(todayStr))/(1000*60*60*24));
       var whenCls=diff<=0?'tw-heute':'tw-bald';
       var whenTxt=diff<0?'Überfällig':diff===0?'Heute':diff===1?'Morgen':'In '+diff+' Tagen';
-      var icon=a.typ==='notiz'?'📝':'📋';
       html+='<div class="termin-item" onclick="showSec(\'kalender\');setTimeout(function(){selectDay(\''+a.datum+'\');},100)" style="cursor:pointer">'
         +'<div class="termin-date-box"><div class="termin-day">'+d.getDate()+'</div><div class="termin-mon">'+MONATE_K[d.getMonth()]+'</div></div>'
-        +'<div class="termin-info"><div class="termin-name">'+icon+' '+a.name+'</div><div class="termin-beet">'+(a.beet?beetName(a.beet):'')+'</div></div>'
+        +'<div class="termin-info"><div class="termin-name">📋 '+a.name+'</div><div class="termin-beet">'+(a.beet?beetName(a.beet):'')+'</div></div>'
         +'<span class="termin-when '+whenCls+'">'+whenTxt+'</span>'
         +'</div>';
     });
-    termineEl.innerHTML=html;
+  } else {
+    html+='<div style="font-size:.85rem;color:var(--text3);padding:6px 0;font-style:italic">Keine offenen Aufgaben 🎉</div>';
   }
+
+  if(recentNotizen.length) {
+    html+='<div style="font-size:.72rem;font-weight:700;color:var(--text3);padding:8px 0 4px;text-transform:uppercase;letter-spacing:.06em">📝 Letzte Notizen</div>';
+    recentNotizen.forEach(function(n){
+      html+='<div class="termin-item" onclick="showSec(\'kalender\');setTimeout(function(){selectDay(\''+n.datum+'\');},100)" style="cursor:pointer;border-left:3px solid var(--gold);padding-left:8px">'
+        +'<div class="termin-date-box" style="background:var(--gold-light)"><div class="termin-day" style="color:var(--gold)">'+(n.datum?new Date(n.datum+'T00:00:00').getDate():'—')+'</div><div class="termin-mon">'+(n.datum?MONATE_K[new Date(n.datum+'T00:00:00').getMonth()]:'')+'</div></div>'
+        +'<div class="termin-info"><div class="termin-name">'+n.name+'</div><div class="termin-beet">'+(n.notiz?n.notiz:'')+'</div></div>'
+        +'</div>';
+    });
+  }
+
+  termineEl.innerHTML=html;
   var qEl=$('tagesquote');
   if(qEl) qEl.textContent = QUOTES[new Date().getDate() % QUOTES.length];
   renderPflanzenMini();
+  renderDashGalerie();
 }
 
 function renderPflanzenMini() {
@@ -2073,7 +2137,7 @@ function importData(input){
       if(!data.pflanzen||!data.beete){toast('❌ Ungültige Backup-Datei');return;}
       if(!confirm('Backup laden?\n'+data.pflanzen.length+' Pflanzen, '+data.beete.length+' Beete\n\n⚠️ Aktuelle Daten werden überschrieben!'))return;
       db=data;
-      ['aufgaben','ernten','notizen','samen','wissenEigen'].forEach(function(k){if(!db[k])db[k]=[];});
+      ['aufgaben','ernten','notizen','samen','wissenEigen','galerie'].forEach(function(k){if(!db[k])db[k]=[];});
       saveLocal();toast('✅ Backup eingespielt!');renderDashboard();
     }catch(e){toast('❌ Fehler beim Lesen der Datei');}
   };r.readAsText(file);input.value='';
@@ -2084,6 +2148,66 @@ function openLB(src){
   var lb=document.getElementById('lb');
   if(!lb){lb=document.createElement('div');lb.id='lb';lb.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:300;display:flex;align-items:center;justify-content:center;cursor:pointer';lb.onclick=function(){lb.remove();};lb.innerHTML='<img style="max-width:95%;max-height:90vh;border-radius:10px">';document.body.appendChild(lb);}
   lb.querySelector('img').src=src;
+}
+
+// ===== GALERIE =====
+function uploadGalerieFotos(input) {
+  if(!db.galerie) db.galerie=[];
+  Array.from(input.files).forEach(function(file){
+    var rd=new FileReader();
+    rd.onload=function(e){
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');
+        var M=1200; var w=img.width,h=img.height;
+        if(w>M||h>M){if(w>h){h=h*M/w;w=M;}else{w=w*M/h;h=M;}}
+        c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0,w,h);
+        var entry={id:uid(),data:c.toDataURL('image/jpeg',0.8),datum:today(),erstellt:new Date().toISOString()};
+        db.galerie.unshift(entry);
+        sched();
+        renderDashGalerie();
+        if(activeSec==='galerie') renderGalerie();
+        toast('📸 Foto gespeichert');
+      };
+      img.src=e.target.result;
+    };
+    rd.readAsDataURL(file);
+  });
+  input.value='';
+}
+
+function renderDashGalerie() {
+  var el=$('dash-foto-strip'); if(!el) return;
+  var fotos=(db.galerie||[]).slice(0,8);
+  var html='<label style="width:70px;height:70px;border-radius:var(--r-sm);border:2px dashed var(--border2);background:var(--green-light);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;font-size:1.4rem;cursor:pointer;position:relative">'
+    +'📷<span style="font-size:.6rem;color:var(--text3);margin-top:2px">+ Foto</span>'
+    +'<input type="file" accept="image/*" multiple onchange="uploadGalerieFotos(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">'
+    +'</label>';
+  fotos.forEach(function(f){
+    html+='<img src="'+f.data+'" class="dash-foto-thumb" onclick="openLB(this.src)" title="'+f.datum+'">';
+  });
+  if((db.galerie||[]).length>8) html+='<div onclick="showSec(\'galerie\')" style="width:70px;height:70px;border-radius:var(--r-sm);background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--green);font-weight:700;cursor:pointer;flex-shrink:0">Alle →</div>';
+  el.innerHTML=html;
+}
+
+function renderGalerie() {
+  var el=$('galerie-grid'); if(!el) return;
+  var fotos=db.galerie||[];
+  if(!fotos.length){el.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="ei">📸</div><p>Noch keine Fotos.<br>Lade dein erstes Gartenfoto hoch!</p></div>';return;}
+  el.innerHTML=fotos.map(function(f){
+    return '<div class="foto-item">'
+      +'<img src="'+f.data+'" onclick="openLB(this.src)">'
+      +'<div class="foto-item-date">'+fdate(f.datum)+'</div>'
+      +'<button class="foto-item-del" onclick="deleteFoto(\''+f.id+'\');event.stopPropagation()">✕</button>'
+      +'</div>';
+  }).join('');
+}
+
+function deleteFoto(id) {
+  if(!confirm('Foto löschen?')) return;
+  db.galerie=(db.galerie||[]).filter(function(f){return f.id!==id;});
+  sched(); renderGalerie(); renderDashGalerie(); toast('🗑️ Foto gelöscht');
 }
 
 // ===== CLOSE MODALS =====
