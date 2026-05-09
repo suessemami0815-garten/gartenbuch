@@ -4,7 +4,7 @@
   "description": "Dein persönliches Gartentagebuch",
   "start_url": "./index.html",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#f5f0e6",
   "theme_color": "#3d5c2e",
   "lang": "de",
